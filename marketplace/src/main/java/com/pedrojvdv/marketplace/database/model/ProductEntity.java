@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "product")
@@ -28,9 +30,7 @@ public class ProductEntity {
     @Column(nullable = false)
     private Integer quantity;
 
-    //TODO: manyToOne relationship.
-//    @Column(name = "discount_active", nullable = false)
-//    private Boolean discountActive;
-
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<DiscountEntity> discounts = new HashSet<>();
 
 }

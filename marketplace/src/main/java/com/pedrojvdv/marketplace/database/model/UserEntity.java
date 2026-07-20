@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "user")
 @NoArgsConstructor
@@ -32,10 +36,21 @@ public class UserEntity {
     @Column(nullable = false)
     private Integer age;
 
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<OrderEntity> orders = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<SaleEntity> sales = new HashSet<>();
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private WishListEntity wishLists;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<ProductEntity> products = new HashSet<>();
 
 
 }

@@ -27,5 +27,4 @@ public class SaleEntity {
 
     @Column(name = "publish_date", nullable = false, updatable = false)
     private LocalDateTime publishDate;
-
 }
