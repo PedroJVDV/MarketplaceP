@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "discount")
@@ -25,5 +27,14 @@ public class DiscountEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DiscountActive discountActive;
+
+    @OneToMany(mappedBy = "discount", fetch = FetchType.LAZY)
+    private Set<OrderEntity> order = new HashSet<>();
+
+    @OneToMany(mappedBy = "discount", fetch = FetchType.LAZY)
+    private Set<ProductEntity> product = new HashSet<>();
+
+    @OneToMany(mappedBy = "discount", fetch = FetchType.LAZY)
+    private Set<SaleEntity> sale = new HashSet<>();
 
 }

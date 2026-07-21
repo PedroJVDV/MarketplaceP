@@ -27,4 +27,17 @@ public class SaleEntity {
 
     @Column(name = "publish_date", nullable = false, updatable = false)
     private LocalDateTime publishDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id")
+    private DiscountEntity discount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private ProductEntity product;
+
 }

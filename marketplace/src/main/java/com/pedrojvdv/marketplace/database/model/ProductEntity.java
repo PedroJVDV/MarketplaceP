@@ -30,7 +30,15 @@ public class ProductEntity {
     @Column(nullable = false)
     private Integer quantity;
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<DiscountEntity> discounts = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id", nullable = true) // pode estar redundante, sem problemas!
+    private DiscountEntity discount;
+
+    @OneToMany(mappedBy = "product",fetch = FetchType.LAZY)
+    private Set<SaleEntity> sale = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
 }

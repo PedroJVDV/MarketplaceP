@@ -46,11 +46,10 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<SaleEntity> sales = new HashSet<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private WishListEntity wishLists;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<WishListEntity> wishList = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<ProductEntity> products = new HashSet<>();
-
+    private Set<ProductEntity> product = new HashSet<>();
 
 }
