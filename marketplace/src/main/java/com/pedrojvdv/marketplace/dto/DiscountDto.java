@@ -2,15 +2,13 @@ package com.pedrojvdv.marketplace.dto;
 
 
 import com.pedrojvdv.marketplace.enums.DiscountActive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiscountDto {
