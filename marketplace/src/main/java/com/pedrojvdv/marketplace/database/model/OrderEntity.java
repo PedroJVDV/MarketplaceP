@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -34,7 +34,7 @@ public class OrderEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
     private DiscountEntity discount;

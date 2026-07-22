@@ -44,7 +44,7 @@ public class UserEntity {
     private Set<OrderEntity> orders = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<SaleEntity> sales = new HashSet<>();
+    private Set<SaleEntity> sale = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<WishListEntity> wishList = new HashSet<>();
