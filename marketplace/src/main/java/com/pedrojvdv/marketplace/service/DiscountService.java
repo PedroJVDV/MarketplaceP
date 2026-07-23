@@ -21,17 +21,18 @@ public class DiscountService {
 
     private final IDiscountRepository discountRepository;
 
-    public DiscountEntity createDiscount(DiscountDto discountDto) {
+    @Transactional(rollbackFor = Exception.class)
+    public void createDiscount(DiscountDto discountDto) {
 
         DiscountEntity discount = DiscountEntity.builder()
                 .discountValue(discountDto.getDiscountValue())
                 .discountActive(discountDto.getDiscountActive())
                 .build();
 
-        return discountRepository.save(discount);
+        discountRepository.save(discount);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateDiscount(Long id, DiscountDto discountDto) throws BadRequestException {
         DiscountEntity discount = discountRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Desconto não encontrado!"));
@@ -46,30 +47,35 @@ public class DiscountService {
         discountRepository.save(discount);
     }
 
-    @Transactional
-    public void deleteDiscount(Long id)throws NotFoundException {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDiscount(Long id) throws NotFoundException {
         DiscountEntity discount = discountRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Desconto não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Desconto não encontrado!"));
 
         discountRepository.delete(discount);
     }
 
+    @Transactional(readOnly = true)
     public List<DiscountDto> getAllDiscounts() {
         return discountRepository.getAllDiscounts();
     }
 
+    @Transactional(readOnly = true)
     public Optional<DiscountEntity> getDiscountById(Long id) {
         return discountRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<DiscountDto> getAllDiscountsByValue(BigDecimal discountValue) {
         return discountRepository.getByDiscountValue(discountValue);
     }
 
+    @Transactional(readOnly = true)
     public List<DiscountDto> getAllDiscountsActive(DiscountActive discountActive) {
         return discountRepository.getByActiveDiscount(discountActive);
     }
 
+    @Transactional(readOnly = true)
     public List<DiscountDto> getAllDiscountsInactive(DiscountActive discountActive) {
         return discountRepository.getByInativeDiscount(discountActive);
     }

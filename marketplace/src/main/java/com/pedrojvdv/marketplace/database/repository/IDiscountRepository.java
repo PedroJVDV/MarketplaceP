@@ -1,13 +1,10 @@
 package com.pedrojvdv.marketplace.database.repository;
 
-
 import com.pedrojvdv.marketplace.database.model.DiscountEntity;
 import com.pedrojvdv.marketplace.dto.DiscountDto;
 import com.pedrojvdv.marketplace.enums.DiscountActive;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
@@ -15,10 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long> {
-
-    List<DiscountEntity> findByDiscountValue(BigDecimal discountValue);
-
-    List<DiscountEntity> findByDiscountActive(DiscountActive discountActive);
 
     @NullMarked
     Optional<DiscountEntity> findById(Long id);
@@ -40,7 +33,7 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
             SELECT NEW com.pedrojvdv.marketplace.dto.DiscountDto(d.discountValue, d.discountActive)
             FROM DiscountEntity d
             WHERE d.discountActive = DiscountActive.YES
-            AND d.discountValue = :discount_value
+            AND d.discountActive = :discount_active
             """)
     List<DiscountDto> getByActiveDiscount(DiscountActive discountActive);
 
@@ -48,7 +41,7 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
             SELECT NEW com.pedrojvdv.marketplace.dto.DiscountDto(d.discountValue, d.discountActive)
             FROM DiscountEntity d
             WHERE d.discountActive = DiscountActive.NO
-            AND d.discountValue = :discount_value
+            AND d.discountActive = :discount_active
             """)
     List<DiscountDto> getByInativeDiscount(DiscountActive discountActive);
 }
