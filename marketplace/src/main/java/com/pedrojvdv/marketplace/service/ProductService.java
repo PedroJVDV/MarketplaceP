@@ -59,6 +59,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getAllProducts() {
         return productRepository.getAllProduct()
                 .stream()
@@ -73,6 +74,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getProductById(Long id){
         return productRepository.findById(id)
                 .stream()
@@ -80,6 +82,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getByPriceGreaterThan(BigDecimal price) {
         return productRepository.findByPriceGreaterThan(price)
                 .stream()
@@ -87,6 +90,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getByPriceLessThan(BigDecimal price) {
         return productRepository.findByPriceLessThan(price)
                 .stream()
@@ -94,6 +98,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getByPrice(BigDecimal price) {
         return productRepository.findByPrice(price)
                 .stream()
@@ -101,6 +106,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getByName(String name){
         return productRepository.findByName(name)
                 .stream()
@@ -108,6 +114,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getByQuantity(Integer quantity){
         return productRepository.getByQuantity(quantity)
                 .stream()
@@ -115,6 +122,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getProductWithDiscount(){
         return productRepository.getProductWithDiscount()
                 .stream()
@@ -122,6 +130,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getProductWithoutDiscount(){
         return productRepository.getProductWithoutDiscount()
                 .stream()
