@@ -16,4 +16,5 @@ public class SaleDto {
     private Adress saleLocation;
     private Integer quantity;
     private LocalDateTime publishDate;
+
 }
