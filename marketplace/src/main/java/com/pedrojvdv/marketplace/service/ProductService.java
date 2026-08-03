@@ -5,8 +5,8 @@ import com.pedrojvdv.marketplace.database.repository.IDiscountRepository;
 import com.pedrojvdv.marketplace.database.repository.IProductRepository;
 import com.pedrojvdv.marketplace.dto.ProductDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
+import com.pedrojvdv.marketplace.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +20,9 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final IProductRepository productRepository;
-    private final IDiscountRepository discountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     public void createProduct(ProductDto productDto) throws BadRequestException {
-
         ProductEntity product = productRepository.findByName(productDto.getName())
                 .orElse(null);
         if (product != null) {
