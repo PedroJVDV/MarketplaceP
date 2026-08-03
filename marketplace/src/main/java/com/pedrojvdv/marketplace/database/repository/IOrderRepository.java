@@ -2,14 +2,24 @@ package com.pedrojvdv.marketplace.database.repository;
 
 import com.pedrojvdv.marketplace.database.model.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
 
-    List<OrderEntity> findByQuantity(Integer quantity);
+
+    Optional<OrderEntity> findByQuantity(Integer quantity);
 
     List<OrderEntity> findByOrderTime(LocalDateTime orderTime);
+
+    @Query("""
+        SELECT o FROM OrderEntity o JOIN FETCH UserEntity u
+        WHERE u.user_id = :id
+        AND o.order_quantity = :quantity
+""")
+    List<OrderEntity> getAllOrdersByUserId(Long userId);
 
 }

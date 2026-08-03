@@ -1,8 +1,6 @@
 package com.pedrojvdv.marketplace.database.repository;
 
-import com.pedrojvdv.marketplace.database.model.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.ProductEntity;
-import com.pedrojvdv.marketplace.dto.ProductDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
