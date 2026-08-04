@@ -23,8 +23,9 @@ public class ProductService {
 
     @Transactional(rollbackFor = Exception.class)
     public void createProduct(ProductDto productDto) throws BadRequestException {
-        ProductEntity product = productRepository.findByName(productDto.getName())
+        ProductEntity product = productRepository.findById(productDto.getId())
                 .orElse(null);
+
         if (product != null) {
             throw new BadRequestException("Já existe um produto com este nome!");
         }
@@ -38,7 +39,7 @@ public class ProductService {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateProduct(ProductDto productDto) throws BadRequestException {
-        ProductEntity product = productRepository.findByName(productDto.getName())
+        ProductEntity product = productRepository.findById(productDto.getId())
                 .orElseThrow(() -> new BadRequestException("Produto não encontrado!"));
 
         if (productDto.getPrice() != null) {
@@ -58,85 +59,100 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getAllProducts() {
-        return productRepository.getAllProduct()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
+    public List<ProductEntity> getAllProducts() {
+        List<ProductEntity> product = productRepository.getAllProduct();
 
-    public List<ProductDto> getByPriceBetween(BigDecimal priceMin, BigDecimal priceMax) {
-        return productRepository.findByPriceBetween(priceMin, priceMax)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto encontrado!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getProductById(Long id){
-        return productRepository.findById(id)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getByPriceBetween(BigDecimal priceMin, BigDecimal priceMax) {
+        List<ProductEntity> product = productRepository.findByPriceBetween(priceMin, priceMax);
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto encontrado!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getByPriceGreaterThan(BigDecimal price) {
-        return productRepository.findByPriceGreaterThan(price)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public Optional<ProductEntity> getProductById(Long id) {
+        Optional<ProductEntity> product = productRepository.findById(id);
+
+        if (product.isEmpty()) {
+            throw new NotFoundException("Produto inexistente!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getByPriceLessThan(BigDecimal price) {
-        return productRepository.findByPriceLessThan(price)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getByPriceGreaterThan(BigDecimal price) throws NotFoundException {
+        List<ProductEntity> product = productRepository.findByPriceGreaterThan(price);
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto acima deste preço foi encontrado!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getByPrice(BigDecimal price) {
-        return productRepository.findByPrice(price)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getByPriceLessThan(BigDecimal price) throws NotFoundException {
+        List<ProductEntity> product = productRepository.findByPriceLessThan(price);
+
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum abaixo deste preço foi encontrado!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getByName(String name){
-        return productRepository.findByName(name)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getByPrice(BigDecimal price) throws NotFoundException {
+        List<ProductEntity> product = productRepository.findByPrice(price);
+
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto com este preço foi encontrado!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getByQuantity(Integer quantity){
-        return productRepository.getByQuantity(quantity)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getByName(String name) throws NotFoundException {
+        List<ProductEntity> product = productRepository.findByName(name);
+
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto com o nome informado!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getProductWithDiscount(){
-        return productRepository.getProductWithDiscount()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getByQuantity(Integer quantity) throws NotFoundException {
+        List<ProductEntity> product = productRepository.getByQuantity(quantity);
+
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto com a quantidade informada!");
+        }
+        return product;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getProductWithoutDiscount(){
-        return productRepository.getProductWithoutDiscount()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<ProductEntity> getProductWithDiscount() throws NotFoundException {
+        List<ProductEntity> product = productRepository.getProductWithDiscount();
+
+        if (product.isEmpty()) {
+            throw new NotFoundException("Nenhum produto com desconto encontrado!");
+        }
+        return product;
     }
 
-    private ProductDto convertToDto(ProductEntity entity) {
-        return new ProductDto(entity.getName(), entity.getPrice(), entity.getQuantity());
+    @Transactional(readOnly = true)
+    public List<ProductEntity> getProductWithoutDiscount() throws NotFoundException {
+        List<ProductEntity> product = productRepository.getProductWithoutDiscount();
+
+        if (!product.isEmpty()) {
+            throw new NotFoundException("Nenenhum produto sem desconto encontrado!");
+        }
+        return product;
     }
 }
