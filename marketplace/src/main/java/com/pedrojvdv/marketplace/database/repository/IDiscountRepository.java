@@ -33,7 +33,6 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
             SELECT NEW com.pedrojvdv.marketplace.dto.DiscountDto(d.discountValue, d.discountActive)
             FROM DiscountEntity d
             WHERE d.discountActive = DiscountActive.YES
-            AND d.discountActive = :discount_active
             """)
     List<DiscountDto> getByActiveDiscount(DiscountActive discountActive);
 
@@ -41,7 +40,6 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
             SELECT NEW com.pedrojvdv.marketplace.dto.DiscountDto(d.discountValue, d.discountActive)
             FROM DiscountEntity d
             WHERE d.discountActive = DiscountActive.NO
-            AND d.discountActive = :discount_active
             """)
     List<DiscountDto> getByInativeDiscount(DiscountActive discountActive);
 }

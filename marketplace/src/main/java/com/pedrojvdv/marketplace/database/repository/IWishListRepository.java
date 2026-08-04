@@ -10,4 +10,5 @@ public interface IWishListRepository extends JpaRepository<WishListEntity, Long>
 
     List<WishListEntity> findByUser_Id(Long userId);
     List<WishListEntity> findByProduct_Id(Long productId);
+    List<WishListEntity> findByUser_Email(String email);
 }
