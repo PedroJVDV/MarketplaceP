@@ -1,12 +1,10 @@
 spring:
   application:
     name: marketplace
-
   datasource:
     url: jdbc:mysql://localhost:3306/marketplace?createDatabaseIfNotExist=true
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,3 +12,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key}
