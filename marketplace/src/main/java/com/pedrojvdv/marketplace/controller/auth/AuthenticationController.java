@@ -2,8 +2,11 @@ package com.pedrojvdv.marketplace.controller.auth;
 
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
+import com.pedrojvdv.marketplace.dto.User.UserDto;
 import com.pedrojvdv.marketplace.dto.auth.AuthenticationDto;
+import com.pedrojvdv.marketplace.dto.auth.LoginResponseDto;
 import com.pedrojvdv.marketplace.dto.auth.RegisterDto;
+import com.pedrojvdv.marketplace.service.token.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +20,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Validated
 public class AuthenticationController {
+
+    @Autowired
+    TokenService tokenService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -35,7 +43,7 @@ public class AuthenticationController {
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
         var token = tokenService.generateToken((UserDto) auth.getPrincipal());
-        
+
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
