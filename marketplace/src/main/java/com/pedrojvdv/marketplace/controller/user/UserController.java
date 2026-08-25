@@ -1,13 +1,15 @@
 package com.pedrojvdv.marketplace.controller.user;
 
 import com.pedrojvdv.marketplace.dto.User.UserDto;
-import com.pedrojvdv.marketplace.exception.BadRequestException;
+import com.pedrojvdv.marketplace.enums.User.UserRole;
+import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.User.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -17,10 +19,24 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createUser(@Valid @RequestBody UserDto userDto) throws BadRequestException {
-        userService.createUser(userDto);
+    //NOW, THIS CLASS IS MANAGED ONLY BY ADMINS!
+
+    @GetMapping("/{email}/admin")
+    @ResponseStatus(HttpStatus.OK)
+    public void findByEmail(@PathVariable("email") String email)throws NotFoundException {
+        userService.getUserByEmail(email);
+    }
+
+    @GetMapping("/{role}/admin")
+    @ResponseStatus(HttpStatus.OK)
+    public void findByRole(@PathVariable("role")UserRole role)throws NotFoundException {
+        userService.getUserByRole(role);
+    }
+
+    @GetMapping("/{name}/admin")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> findByName(@PathVariable("name") String name)throws NotFoundException {
+        return userService.getUserByName(name);
     }
 
 }
