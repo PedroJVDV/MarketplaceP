@@ -57,9 +57,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getAllProducts() {
-        List<ProductEntity> product = productRepository.findAll();
-
+    public List<ProductDto> getAllProducts() {
+        List<ProductDto> product = productRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto encontrado!");
         }
@@ -67,8 +69,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getByPriceBetween(BigDecimal priceMin, BigDecimal priceMax) {
-        List<ProductEntity> product = productRepository.findByPriceBetween(priceMin, priceMax);
+    public List<ProductDto> getByPriceBetween(BigDecimal priceMin, BigDecimal priceMax) {
+        List<ProductDto> product = productRepository.findByPriceBetween(priceMin, priceMax)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto encontrado!");
         }
@@ -76,9 +81,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ProductEntity> getProductById(Long id) {
-        Optional<ProductEntity> product = productRepository.findById(id);
-
+    public Optional<ProductDto> getProductById(Long id) {
+        Optional<ProductDto> product = productRepository.findById(id)
+                .map(this::toDto);
         if (product.isEmpty()) {
             throw new NotFoundException("Produto inexistente!");
         }
@@ -86,8 +91,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getByPriceGreaterThan(BigDecimal price) throws NotFoundException {
-        List<ProductEntity> product = productRepository.findByPriceGreaterThan(price);
+    public List<ProductDto> getByPriceGreaterThan(BigDecimal price) throws NotFoundException {
+        List<ProductDto> product = productRepository.findByPriceGreaterThan(price)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto acima deste preço foi encontrado!");
         }
@@ -95,9 +103,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getByPriceLessThan(BigDecimal price) throws NotFoundException {
-        List<ProductEntity> product = productRepository.findByPriceLessThan(price);
-
+    public List<ProductDto> getByPriceLessThan(BigDecimal price) throws NotFoundException {
+        List<ProductDto> product = productRepository.findByPriceLessThan(price)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum abaixo deste preço foi encontrado!");
         }
@@ -105,9 +115,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getByPrice(BigDecimal price) throws NotFoundException {
-        List<ProductEntity> product = productRepository.findByPrice(price);
-
+    public List<ProductDto> getByPrice(BigDecimal price) throws NotFoundException {
+        List<ProductDto> product = productRepository.findByPrice(price)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto com este preço foi encontrado!");
         }
@@ -115,9 +127,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getByName(String name) throws NotFoundException {
-        List<ProductEntity> product = productRepository.findByName(name);
-
+    public List<ProductDto> getByName(String name) throws NotFoundException {
+        List<ProductDto> product = productRepository.findByName(name)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto com o nome informado!");
         }
@@ -125,9 +139,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getByQuantity(Integer quantity) throws NotFoundException {
-        List<ProductEntity> product = productRepository.findByQuantity(quantity);
-
+    public List<ProductDto> getByQuantity(Integer quantity) throws NotFoundException {
+        List<ProductDto> product = productRepository.findByQuantity(quantity)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto com a quantidade informada!");
         }
@@ -135,9 +151,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getProductWithDiscount() throws NotFoundException {
-        List<ProductEntity> product = productRepository.getProductWithDiscount();
-
+    public List<ProductDto> getProductWithDiscount() throws NotFoundException {
+        List<ProductDto> product = productRepository.getProductWithDiscount()
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (product.isEmpty()) {
             throw new NotFoundException("Nenhum produto com desconto encontrado!");
         }
@@ -145,12 +163,24 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductEntity> getProductWithoutDiscount() throws NotFoundException {
-        List<ProductEntity> product = productRepository.getProductWithoutDiscount();
-
+    public List<ProductDto> getProductWithoutDiscount() throws NotFoundException {
+        List<ProductDto> product = productRepository.getProductWithoutDiscount()
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (!product.isEmpty()) {
             throw new NotFoundException("Nenenhum produto sem desconto encontrado!");
         }
         return product;
     }
+
+    private ProductDto toDto(ProductEntity p) {
+        ProductDto dto = new ProductDto();
+        dto.setId(p.getId());
+        dto.setName(p.getName());
+        dto.setPrice(p.getPrice());
+        dto.setQuantity(p.getQuantity());
+        return dto;
+    }
+
 }

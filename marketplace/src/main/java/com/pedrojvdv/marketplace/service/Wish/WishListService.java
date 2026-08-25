@@ -6,6 +6,7 @@ import com.pedrojvdv.marketplace.database.model.Wish.WishListEntity;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.database.repository.Wish.IWishListRepository;
+import com.pedrojvdv.marketplace.dto.User.UserDto;
 import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +56,11 @@ public class WishListService {
         });
     }
 
-    public List<WishListEntity> getAllWishLists() {
-        List<WishListEntity> wish = wishListRepository.findAll();
+    public List<WishListDto> getAllWishLists() {
+        List<WishListDto> wish = wishListRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
 
         if (wish.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejos encontrada!");
@@ -64,8 +68,11 @@ public class WishListService {
         return wish;
     }
 
-    public List<WishListEntity> getWishListByUserId(Long userId) throws NotFoundException {
-        List<WishListEntity> wish = wishListRepository.findByUsers_Id(userId);
+    public List<WishListDto> getWishListByUserId(Long userId) throws NotFoundException {
+        List<WishListDto> wish = wishListRepository.findByUsers_Id(userId)
+                .stream()
+                .map(this::toDto)
+                .toList();
 
         if (wish.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejos encontrada para este usuário!");
@@ -73,13 +80,28 @@ public class WishListService {
         return wish;
     }
 
-    public List<WishListEntity> getWishListByUserEmail(String email) throws NotFoundException {
-        List<WishListEntity> wish = wishListRepository.findByUsers_Email(email);
+    public List<WishListDto> getWishListByUserEmail(String email) throws NotFoundException {
+        List<WishListDto> wish = wishListRepository.findByUsers_Email(email)
+                .stream()
+                .map(this::toDto)
+                .toList();
 
         if (wish.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejo encontrada para este email de usuário!");
         }
         return wish;
     }
+
+
+    //WISHLIST PRODUCTS -- NAME, STATUS...
+    private WishListDto toDto(WishListEntity p) {
+        WishListDto dto = new WishListDto();
+
+        dto.setId(p.getId());
+        dto.setUserId(p.getUsers().getId());
+        dto.setProductId(p.getProduct().getId());
+        return dto;
+    }
 }
+
 

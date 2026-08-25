@@ -61,31 +61,40 @@ public class UserService {
                 });
     }
 
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
-    public List<UserEntity> getUserByName(String username) throws NotFoundException {
-        List<UserEntity> user = userRepository.findByName(username);
-
+    public List<UserDto> getUserByName(String username) throws NotFoundException {
+        List<UserDto> user = userRepository.findByName(username)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (user.isEmpty()) {
             throw new NotFoundException("Não existe um usuário com este nome!");
         }
         return user;
     }
 
-    public Optional<UserEntity> getUserByEmail(String email) throws NotFoundException {
-        Optional<UserEntity> user = userRepository.findByEmail(email);
-
+    public Optional<UserDto> getUserByEmail(String email) throws NotFoundException {
+        Optional<UserDto> user = userRepository.findByEmail(email)
+                .stream()
+                .map(this::toDto)
+                .findFirst();
         if (user.isEmpty()) {
             throw new NotFoundException("Não existe um usuário com este email!");
         }
         return user;
     }
 
-    public Optional<UserEntity> getUserById(Long id) throws NotFoundException {
-        Optional<UserEntity> user = userRepository.findById(id);
-
+    public Optional<UserDto> getUserById(Long id) throws NotFoundException {
+        Optional<UserDto> user = userRepository.findById(id)
+                .stream()
+                .map(this::toDto)
+                .findFirst();
         if (user.isEmpty()) {
             throw new NotFoundException("Nenhum usuário encontrado com este ID!");
         }
@@ -93,11 +102,23 @@ public class UserService {
     }
 
     //TODO: STATIC ROLES... (just thinking)
-    public Optional<UserEntity> getUserByRole(UserRole userRole) throws NotFoundException {
-        Optional<UserEntity> user = userRepository.findByRole(userRole);
+    public Optional<UserDto> getUserByRole(UserRole userRole) throws NotFoundException {
+        Optional<UserDto> user = userRepository.findByRole(userRole)
+                .stream()
+                .map(this::toDto)
+                .findFirst();
         if (user.isEmpty()) {
             throw new NotFoundException("Usuário com a função especificada não existe!");
         }
         return user;
+    }
+
+    private UserDto toDto(UserEntity p) {
+        UserDto dto = new UserDto();
+        dto.setName(p.getName());
+        dto.setEmail(p.getEmail());
+        dto.setPassword(p.getPassword());
+        dto.setUserRole(p.getRole());
+        return dto;
     }
 }
