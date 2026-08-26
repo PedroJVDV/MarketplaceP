@@ -16,5 +16,8 @@ public class SaleDto {
     private Adress saleLocation;
     private Integer quantity;
     private LocalDateTime publishDate;
+    private Long userId;
+    private Long productId;
+    private Long discountId;
 
 }

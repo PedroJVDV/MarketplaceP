@@ -14,9 +14,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OrderDto {
 
+    private Long orderId;
     private Integer quantity;
     private LocalDateTime orderTime;
 
     private Long userId;
     private Long productId;
+    private Long discountId;
 }
