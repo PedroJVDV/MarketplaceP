@@ -1,9 +1,11 @@
 package com.pedrojvdv.marketplace.service.Sale;
 
 import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
+
 import com.pedrojvdv.marketplace.database.repository.Sale.ISaleRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
+import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,6 @@ public class SaleService {
     private final IUserRepository userRepository;
 
 
-    //TODO: CHANGES IN THIS LINE -- NEW CREATE....
     @Transactional(rollbackFor = Exception.class)
     public void createSale(SaleDto saleDto) throws NotFoundException {
         saleRepository.findBySaleLocation(saleDto.getSaleLocation())
@@ -33,8 +34,8 @@ public class SaleService {
                         .build()));
     }
 
-    public void updateSale(SaleDto saleDto, Long id) throws NotFoundException {
-        saleRepository.findById(id)
+    public void updateSale(SaleDto saleDto) throws NotFoundException {
+        saleRepository.findById(saleDto.getUserId())
                 .ifPresentOrElse(sale -> {
                             sale.setSaleLocation(saleDto.getSaleLocation());
                             sale.setQuantity(saleDto.getQuantity());
@@ -54,30 +55,36 @@ public class SaleService {
                         });
     }
 
-    public Optional<SaleEntity> getSalesById(Long id) throws NotFoundException {
+    public Optional<SaleDto> getSalesById(Long id) throws NotFoundException {
 
-        Optional<SaleEntity> sale = saleRepository.findById(id);
-
+        Optional<SaleDto> sale = saleRepository.findById(id)
+                .stream()
+                .map(this::toDto)
+                .findFirst();
         if (sale.isPresent()) {
             return sale;
         }
         throw new NotFoundException("Venda não encontrada!");
     }
 
-    public List<SaleEntity> getAllSales() throws NotFoundException {
+    public List<SaleDto> getAllSales() throws NotFoundException {
 
-        List<SaleEntity> sale = saleRepository.findAll();
-
+        List<SaleDto> sale = saleRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada no sistema!");
         }
         return sale;
     }
 
-    public List<SaleEntity> getSaleByUserId(Long userId) throws NotFoundException {
+    public List<SaleDto> getSaleByUserId(Long userId) throws NotFoundException {
 
-        List<SaleEntity> sale = saleRepository.findByUsers_Id(userId);
-
+        List<SaleDto> sale = saleRepository.findByUsers_Id(userId)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (userRepository.existsById(userId)) {
             return sale;
         } else {
@@ -85,30 +92,36 @@ public class SaleService {
         }
     }
 
-    public List<SaleEntity> getByPublishDate(LocalDateTime publishDate) throws NotFoundException {
+    public List<SaleDto> getByPublishDate(LocalDateTime publishDate) throws NotFoundException {
 
-        List<SaleEntity> sale = saleRepository.findByPublishDate(publishDate);
-
+        List<SaleDto> sale = saleRepository.findByPublishDate(publishDate)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com a data especificada!");
         }
         return sale;
     }
 
-    public List<SaleEntity> getByQuantity(Integer quantity) throws NotFoundException {
+    public List<SaleDto> getByQuantity(Integer quantity) throws NotFoundException {
 
-        List<SaleEntity> sale = saleRepository.findByQuantity(quantity);
-
+        List<SaleDto> sale = saleRepository.findByQuantity(quantity)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com a quantidade especificada!");
         }
         return sale;
     }
 
-    public List<SaleEntity> getSaleByCep(String cepNumber) throws NotFoundException, BadRequestException {
+    public List<SaleDto> getSaleByCep(String cepNumber) throws NotFoundException, BadRequestException {
 
-        List<SaleEntity> sale = saleRepository.findByCep_Number(cepNumber);
-
+        List<SaleDto> sale = saleRepository.findByCep_Number(cepNumber)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com o CEP especificado!");
         }
@@ -119,24 +132,41 @@ public class SaleService {
         return sale;
     }
 
-    public List<SaleEntity> getSaleByCity(String city) throws NotFoundException, BadRequestException {
+    public List<SaleDto> getSaleByCity(String city) throws NotFoundException, BadRequestException {
 
-        List<SaleEntity> sale = saleRepository.findByCity_Name(city);
-
+        List<SaleDto> sale = saleRepository.findByCity_Name(city)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com a cidade especificada!");
         }
         return sale;
     }
 
-    public List<SaleEntity> getByFullAdress(String cep, String city, String hood, String streetName, Integer houseNumber) throws NotFoundException, BadRequestException {
+    public List<SaleDto> getByFullAdress(String cep, String city, String hood, String streetName, Integer houseNumber) throws NotFoundException, BadRequestException {
 
-        List<SaleEntity> sale = saleRepository.findByAdress(cep, city, hood, streetName, houseNumber);
-
+        List<SaleDto> sale = saleRepository.findByAdress(cep, city, hood, streetName, houseNumber)
+                .stream()
+                .map(this::toDto)
+                .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com este endereço!");
         }
         return sale;
+    }
+
+    private SaleDto toDto(SaleEntity p) {
+        SaleDto dto = new SaleDto();
+
+        dto.setPublishDate(p.getPublishDate());
+        dto.setQuantity(p.getQuantity());
+        dto.setSaleLocation(p.getSaleLocation());
+        dto.setProductId(p.getProduct().getId());
+        dto.setUserId(p.getUsers().getId());
+        dto.setDiscountId(p.getDiscount().getId());
+
+        return dto;
     }
 
 }

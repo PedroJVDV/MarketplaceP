@@ -1,12 +1,15 @@
 package com.pedrojvdv.marketplace.service.Order;
 
 import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
+import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
 import com.pedrojvdv.marketplace.database.repository.Order.IOrderRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
+import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,18 +50,39 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderEntity> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderDto> getAllOrders() {
+        return orderRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<OrderEntity> getByOrderTime(LocalDateTime orderTime) {
-        return orderRepository.findByOrderTime(orderTime);
+    public List<OrderDto> getByOrderTime(LocalDateTime orderTime) {
+        return orderRepository.findByOrderTime(orderTime)
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<OrderEntity> getAllOrdersByUserId(Long userId) {
-        return orderRepository.getAllOrdersByUserId(userId);
+    public List<OrderDto> getAllOrdersByUserId(Long userId) {
+        return orderRepository.getAllOrdersByUserId(userId)
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
+    private OrderDto toDto(OrderEntity p) {
+        OrderDto dto = new OrderDto();
+
+        dto.setOrderId(p.getId());
+        dto.setOrderTime(p.getOrderTime());
+        dto.setQuantity(p.getQuantity());
+        dto.setProductId(p.getProduct().getId());
+        dto.setDiscountId(p.getDiscount().getId());
+        dto.setUserId(p.getUsers().getId());
+
+        return dto;
+    }
 }

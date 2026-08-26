@@ -46,13 +46,10 @@ public class WishListService {
                 });
     }
 
-    public void deleteWishList(WishListDto wishListDto, Long id) throws NotFoundException {
-        wishListRepository.findById(wishListDto.getId()).ifPresent(wish -> {
-            if (wishListDto.getId().equals(id)) {
-                wishListRepository.delete(wish);
-            } else {
+    public void deleteWishList(Long id) throws NotFoundException {
+        wishListRepository.findById(id).ifPresentOrElse(wishListRepository::delete,
+                () -> {
                 throw new NotFoundException("ID da lista de desejos é inexistente!");
-            }
         });
     }
 
@@ -92,8 +89,6 @@ public class WishListService {
         return wish;
     }
 
-
-    //WISHLIST PRODUCTS -- NAME, STATUS...
     private WishListDto toDto(WishListEntity p) {
         WishListDto dto = new WishListDto();
 
