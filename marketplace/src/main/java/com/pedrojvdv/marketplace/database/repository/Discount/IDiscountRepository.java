@@ -16,6 +16,8 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
     @NullMarked
     Optional<DiscountEntity> findById(Long id);
 
+    //TODO: NEW STRUCTURE ABOUT QUERY PARAMS... AT THIS TIME THAT ARE NOT GOOD!
+
     @Query("""
             SELECT NEW com.pedrojvdv.marketplace.dto.Discount.DiscountDto(d.discountValue, d.discountActive)
             FROM DiscountEntity d

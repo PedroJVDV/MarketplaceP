@@ -22,4 +22,5 @@ public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
             """)
     List<OrderEntity> getAllOrdersByUserId(Long userId);
 
+
 }
