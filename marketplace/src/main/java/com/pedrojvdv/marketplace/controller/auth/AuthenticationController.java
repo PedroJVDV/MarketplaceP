@@ -37,12 +37,13 @@ public class AuthenticationController {
     @Autowired
     private IUserRepository userRepository;
 
+
     @PostMapping("/v1/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDto dataDto) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(dataDto.getUsernameLogin(), dataDto.getPassword());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((UserDto) auth.getPrincipal());
+        var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
 
         return ResponseEntity.ok(new LoginResponseDto(token));
     }

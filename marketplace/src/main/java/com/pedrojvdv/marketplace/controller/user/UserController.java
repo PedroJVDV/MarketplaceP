@@ -27,15 +27,15 @@ public class UserController {
         userService.getUserByEmail(email);
     }
 
-    @GetMapping("/{role}/admin")
+    @GetMapping("/role/admin")
     @ResponseStatus(HttpStatus.OK)
-    public void findByRole(@PathVariable("role")UserRole role)throws NotFoundException {
+    public void findByRole(@RequestParam UserRole role)throws NotFoundException {
         userService.getUserByRole(role);
     }
 
-    @GetMapping("/{name}/admin")
+    @GetMapping("/name/admin")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> findByName(@PathVariable("name") String name)throws NotFoundException {
+    public List<UserDto> findByName(@RequestParam String name)throws NotFoundException {
         return userService.getUserByName(name);
     }
 
