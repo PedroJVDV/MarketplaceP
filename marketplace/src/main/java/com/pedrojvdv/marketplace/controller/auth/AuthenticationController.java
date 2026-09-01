@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/v1/auth")
 @RequiredArgsConstructor
 @Validated
 public class AuthenticationController {
@@ -38,7 +38,7 @@ public class AuthenticationController {
     private IUserRepository userRepository;
 
 
-    @PostMapping("/v1/login")
+    @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDto dataDto) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(dataDto.getUsernameLogin(), dataDto.getPassword());
         var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -48,7 +48,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
-    @PostMapping("/v1/register")
+    @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDto registerDto) {
         if (userRepository.findByEmail(registerDto.getEmail()).isPresent() || userRepository.findByUsernameLogin(registerDto.getUsernameLogin()) != null) {
             return ResponseEntity.badRequest().build();

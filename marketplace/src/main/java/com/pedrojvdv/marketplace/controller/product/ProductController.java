@@ -28,13 +28,13 @@ public class ProductController {
         productService.createProduct(productDto);
     }
 
-    @PutMapping
+    @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateProduct(@Valid @RequestBody ProductDto productDto) throws NotFoundException {
-        productService.updateProduct(productDto);
+    public void updateProduct(@Valid @RequestBody ProductDto productDto, @PathVariable("productId") Long productId) throws NotFoundException {
+        productService.updateProduct(productDto, productId);
     }
 
-    @DeleteMapping("/{productId}/delete")
+    @DeleteMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable("productId") Long id) throws NotFoundException {
         productService.deleteProduct(id);

@@ -32,7 +32,7 @@ public class WishListController {
         wishListService.updateWishList(wishListDto);
     }
 
-    @DeleteMapping("/delete/{wishId}/admin")
+    @DeleteMapping("/{wishId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWishList(@Valid @PathVariable Long wishId) {
         wishListService.deleteWishList(wishId);

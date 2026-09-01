@@ -21,19 +21,19 @@ public class UserController {
 
     //NOW, THIS CLASS IS MANAGED ONLY BY ADMINS!
 
-    @GetMapping("/{email}/admin")
+    @GetMapping("/filter/email/admin")
     @ResponseStatus(HttpStatus.OK)
-    public void findByEmail(@PathVariable("email") String email)throws NotFoundException {
+    public void findByEmail(@RequestParam String email)throws NotFoundException {
         userService.getUserByEmail(email);
     }
 
-    @GetMapping("/role/admin")
+    @GetMapping("/filter/role/admin")
     @ResponseStatus(HttpStatus.OK)
     public void findByRole(@RequestParam UserRole role)throws NotFoundException {
         userService.getUserByRole(role);
     }
 
-    @GetMapping("/name/admin")
+    @GetMapping("/filter/name/admin")
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> findByName(@RequestParam String name)throws NotFoundException {
         return userService.getUserByName(name);

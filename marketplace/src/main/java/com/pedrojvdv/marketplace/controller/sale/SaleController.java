@@ -36,7 +36,7 @@ public class SaleController {
         saleService.updateSale(saleDto);
     }
 
-    @DeleteMapping("/admin/{saleId}")
+    @DeleteMapping("/{saleId}")
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void deleteSale(@Valid @PathVariable("saleId") Long saleId ) throws NotFoundException {
         saleService.deleteSale(saleId);
@@ -77,13 +77,13 @@ public class SaleController {
         return saleService.getByPublishDate(date);
     }
 
-    @GetMapping("/filter/saleUID/{userId}")
+    @GetMapping("/admin/filter/saleUID/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public List<SaleDto> findByUserId(@PathVariable("userId") Long userId) throws NotFoundException {
         return saleService.getSaleByUserId(userId);
     }
 
-    @GetMapping("/filter/saleID/{saleId}")
+    @GetMapping("/admin/filter/saleID/{saleId}")
     @ResponseStatus(HttpStatus.OK)
     public Optional<SaleDto> findBySaleId(@PathVariable("saleId") Long saleId) throws NotFoundException {
         return saleService.getSalesById(saleId);

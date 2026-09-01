@@ -33,7 +33,7 @@ public class OrderController {
         orderService.updateOrder(orderDto);
     }
 
-    @DeleteMapping("{orderId}/delete")
+    @DeleteMapping("/{orderId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@Valid @PathVariable("orderId") Long orderId) throws NotFoundException {
         orderService.deleteOrder(orderId);
@@ -46,13 +46,13 @@ public class OrderController {
         orderService.getAllOrdersByUserId(userId);
     }
 
-    @GetMapping("/ordertime")
+    @GetMapping("/filter/ordertime")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderDto> getByOrderTime(@RequestParam LocalDateTime orderTime) {
         return orderService.getByOrderTime(orderTime);
     }
 
-    @GetMapping("/all-orders")
+    @GetMapping("/filter/all-orders")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderDto> getAllOrders() {
         return orderService.getAllOrders();

@@ -30,42 +30,40 @@ public class DiscountController {
         discountService.createDiscount(discountDto);
     }
 
-    @PutMapping
+    @PutMapping("/{discountId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateDiscount(@Valid @RequestBody DiscountDto discountDto) throws NotFoundException, BadRequestException {
-        discountService.updateDiscount(discountDto);
+    public void updateDiscount(@Valid @RequestBody DiscountDto discountDto, @PathVariable("discountId") Long discountId) throws NotFoundException, BadRequestException {
+        discountService.updateDiscount(discountDto, discountId);
     }
 
-    @DeleteMapping("/{discountId}/delete")
+    @DeleteMapping("/{discountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDiscount(@Valid @PathVariable ("discountId") Long discountId) throws NotFoundException {
         discountService.deleteDiscount(discountId);
     }
 
     //GET
-    @GetMapping("/discount-value-fil")
+    @GetMapping("/filter/discount-value-fil")
     @ResponseStatus(HttpStatus.OK)
     public List<DiscountDto> getByDiscountValue( @RequestParam BigDecimal discountValue) {
         return discountService.getAllDiscountsByValue(discountValue);
     }
 
-    @GetMapping("/discounts")
+    @GetMapping("/filter/discounts-fil")
     @ResponseStatus(HttpStatus.OK)
     public List<DiscountDto> getAllDiscounts() {
         return discountService.getAllDiscounts();
     }
 
-    @GetMapping("/discount-active-fil")
+    @GetMapping("/filter/discount-active-fil")
     @ResponseStatus(HttpStatus.OK)
     public List<DiscountDto> getActiveDiscounts() {
         return discountService.getAllDiscountsActive(DiscountActive.YES);
     }
 
-    @GetMapping("/discount-nonActive-fil")
+    @GetMapping("/filter/discount-nonActive-fil")
     @ResponseStatus(HttpStatus.OK)
     public List<DiscountDto> getNonActiveDiscounts() {
         return discountService.getAllDiscountsInactive(DiscountActive.NO);
     }
-
-
 }
