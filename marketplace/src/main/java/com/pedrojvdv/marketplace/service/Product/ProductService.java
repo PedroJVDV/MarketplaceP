@@ -5,9 +5,11 @@ import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.dto.Product.ProductDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +23,6 @@ public class ProductService {
 
     @Transactional(rollbackFor = Exception.class)
     public void createProduct(ProductDto productDto) throws BadRequestException {
-        ProductEntity product = productRepository.findById(productDto.getId())
-                .orElse(null);
-
-        if (product != null) {
-            throw new BadRequestException("Já existe um produto com este nome!");
-        }
 
         productRepository.save(ProductEntity.builder()
                 .name(productDto.getName())
@@ -36,8 +32,8 @@ public class ProductService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateProduct(ProductDto productDto) throws BadRequestException {
-        ProductEntity product = productRepository.findById(productDto.getId())
+    public void updateProduct(ProductDto productDto, Long id) throws BadRequestException {
+        ProductEntity product = productRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Produto não encontrado!"));
 
         if (productDto.getPrice() != null) {
@@ -176,7 +172,6 @@ public class ProductService {
 
     private ProductDto toDto(ProductEntity p) {
         ProductDto dto = new ProductDto();
-        dto.setId(p.getId());
         dto.setName(p.getName());
         dto.setPrice(p.getPrice());
         dto.setQuantity(p.getQuantity());

@@ -33,8 +33,8 @@ public class DiscountService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateDiscount(DiscountDto discountDto) throws BadRequestException {
-        DiscountEntity discount = discountRepository.findById(discountDto.getDiscountId())
+    public void updateDiscount(DiscountDto discountDto, Long discountId) throws BadRequestException {
+        DiscountEntity discount = discountRepository.findById(discountId)
                 .orElseThrow(() -> new BadRequestException("Desconto não encontrado!"));
 
         if (discountDto.getDiscountValue() != null) {
