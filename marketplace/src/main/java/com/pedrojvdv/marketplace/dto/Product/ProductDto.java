@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class ProductDto {
 
-    private Long id;
     private String name;
     private BigDecimal price;
     private Integer quantity;

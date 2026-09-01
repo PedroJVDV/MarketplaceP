@@ -16,6 +16,4 @@ public class DiscountDto {
     private BigDecimal discountValue;
     private DiscountActive discountActive;
 
-    private Long discountId;
-
 }
