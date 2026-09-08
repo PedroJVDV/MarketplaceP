@@ -31,8 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/v1/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/v1/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/product", "/v1/discount").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.POST, "/v1/product", "/v1/discount").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/v1/product", "/v1/discount").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/v1/product", "/v1/discount").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/v1/product", "/v1/discount").hasRole("SELLER")
                         .anyRequest().authenticated()
