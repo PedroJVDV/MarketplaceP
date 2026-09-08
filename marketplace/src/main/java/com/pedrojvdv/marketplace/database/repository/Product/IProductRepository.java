@@ -12,6 +12,7 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
 
     List<ProductEntity> findByName(String name);
 
+
     @NullMarked
     List<ProductEntity> findAll();
 
@@ -26,16 +27,21 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductEntity> findByQuantity(Integer quantity);
 
     @Query(value = """
-                    SELECT p FROM ProductEntity p JOIN FETCH DiscountEntity d
+                    SELECT p
+                    FROM ProductEntity p
+                    JOIN FETCH p.discount d
                     WHERE d.discountValue > 0
                     AND d.discountActive = DiscountActive.YES
             """)
     List<ProductEntity> getProductWithDiscount();
 
     @Query(value = """
-                    SELECT p FROM ProductEntity p JOIN FETCH DiscountEntity d
-                    WHERE d.discountValue <= 0
-                    AND d.discountActive = DiscountActive.NO
+                    SELECT p
+                    FROM ProductEntity p
+                    JOIN FETCH p.discount d
+                    WHERE d IS NULL
+                         OR(d.discountValue <= 0
+                    AND d.discountActive = DiscountActive.NO)
             """)
     List<ProductEntity> getProductWithoutDiscount();
 }
