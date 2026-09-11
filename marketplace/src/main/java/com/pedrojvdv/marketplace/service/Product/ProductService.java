@@ -164,8 +164,8 @@ public class ProductService {
                 .stream()
                 .map(this::toDto)
                 .toList();
-        if (!product.isEmpty()) {
-            throw new NotFoundException("Nenenhum produto sem desconto encontrado!");
+        if (product.isEmpty()) {
+            throw new NotFoundException("nenhum produto sem desconto encontrado!");
         }
         return product;
     }
