@@ -16,6 +16,7 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
     @NullMarked
     List<ProductEntity> findAll();
 
+
     List<ProductEntity> findByPriceBetween(BigDecimal priceMin, BigDecimal priceMax);
 
     List<ProductEntity> findByPriceGreaterThan(BigDecimal price);
@@ -30,18 +31,21 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
                     SELECT p
                     FROM ProductEntity p
                     JOIN FETCH p.discount d
-                    WHERE d.discountValue > 0
-                    AND d.discountActive = DiscountActive.YES
+                    WHERE d IS NOT NULL
+                          OR (d.discountValue > 0
+                    AND d.discountActive = DiscountActive.YES)
             """)
     List<ProductEntity> getProductWithDiscount();
 
     @Query(value = """
                     SELECT p
                     FROM ProductEntity p
-                    JOIN FETCH p.discount d
+                    LEFT JOIN FETCH p.discount d
                     WHERE d IS NULL
-                         OR(d.discountValue <= 0
-                    AND d.discountActive = DiscountActive.NO)
+                       OR (
+                             (d.discountValue IS NULL OR d.discountValue <= 0)
+                             AND (d.discountActive IS NULL OR d.discountActive = DiscountActive.NO)
+                          )
             """)
     List<ProductEntity> getProductWithoutDiscount();
 }
