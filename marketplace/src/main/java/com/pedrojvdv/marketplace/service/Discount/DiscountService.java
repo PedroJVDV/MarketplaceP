@@ -1,15 +1,20 @@
 package com.pedrojvdv.marketplace.service.Discount;
 
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
+import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
+import com.pedrojvdv.marketplace.database.repository.Discount.DiscountSelectionProjection;
 import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
 import com.pedrojvdv.marketplace.dto.Discount.DiscountDto;
+import com.pedrojvdv.marketplace.dto.Order.OrderDto;
 import com.pedrojvdv.marketplace.enums.Discount.DiscountActive;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,7 +29,11 @@ public class DiscountService {
     @Transactional(rollbackFor = Exception.class)
     public void createDiscount(DiscountDto discountDto) {
 
+        Optional<Long> discountId = discountRepository.findById(discountDto.getDiscountId())
+                .map(DiscountEntity::getId);
+
         DiscountEntity discount = DiscountEntity.builder()
+                .id(discountId.orElse(null))
                 .discountValue(discountDto.getDiscountValue())
                 .discountActive(discountDto.getDiscountActive())
                 .build();
@@ -56,8 +65,8 @@ public class DiscountService {
     }
 
     @Transactional(readOnly = true)
-    public List<DiscountDto> getAllDiscounts() {
-        return discountRepository.getAllDiscounts();
+    public List<DiscountSelectionProjection> getAllDiscounts() {
+        return discountRepository.findAllDiscounts();
     }
 
     @Transactional(readOnly = true)
@@ -66,17 +75,27 @@ public class DiscountService {
     }
 
     @Transactional(readOnly = true)
-    public List<DiscountDto> getAllDiscountsByValue(BigDecimal discountValue) {
-        return discountRepository.getByDiscountValue(discountValue);
+    public List<DiscountSelectionProjection> getAllDiscountsByValue(BigDecimal discountValue) {
+        if (discountValue == null) {
+            throw new NotFoundException( "Valor do desconto nulo!");
+        }
+
+        List<DiscountSelectionProjection> discounts = discountRepository.getByDiscountValue(discountValue);
+
+        if (discounts == null || discounts.isEmpty()) {
+            throw new NotFoundException( "Nenhum desconto encontrado com este valor!");
+        }
+
+        return discounts;
     }
 
     @Transactional(readOnly = true)
-    public List<DiscountDto> getAllDiscountsActive(DiscountActive discountActive) {
+    public List<DiscountSelectionProjection> getAllDiscountsActive(DiscountActive discountActive) {
         return discountRepository.getByActiveDiscount(discountActive);
     }
 
     @Transactional(readOnly = true)
-    public List<DiscountDto> getAllDiscountsInactive(DiscountActive discountActive) {
+    public List<DiscountSelectionProjection> getAllDiscountsInactive(DiscountActive discountActive) {
         return discountRepository.getByInativeDiscount(discountActive);
     }
 

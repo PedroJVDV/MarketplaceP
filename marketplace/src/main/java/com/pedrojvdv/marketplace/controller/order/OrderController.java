@@ -6,6 +6,9 @@ import com.pedrojvdv.marketplace.service.Order.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/order")
+@RequestMapping("/v1/order/")
 @RequiredArgsConstructor
 @Validated
 public class OrderController {
@@ -23,8 +26,9 @@ public class OrderController {
     //POST-DELETE
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createOrder(@Valid @RequestBody OrderDto orderDto)throws NotFoundException {
-        orderService.createOrder(orderDto);
+    public ResponseEntity<Void>createOrder(@Valid @RequestBody OrderDto orderDto, @AuthenticationPrincipal UserDetails authUserId)throws NotFoundException {
+        orderService.createOrder(orderDto, authUserId.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping

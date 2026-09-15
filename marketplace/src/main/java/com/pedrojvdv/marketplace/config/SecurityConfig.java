@@ -35,11 +35,11 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/product", "/v1/discount").hasAnyRole("SELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/v1/product", "/v1/discount").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/product", "/v1/discount").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST, "/v1/auth/login", "/v1/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/v1/product/**", "/v1/discount/**", "/v1/order/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers("/v1/order/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

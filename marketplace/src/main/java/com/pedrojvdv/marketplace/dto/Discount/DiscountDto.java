@@ -5,6 +5,7 @@ import com.pedrojvdv.marketplace.enums.Discount.DiscountActive;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,4 +17,5 @@ public class DiscountDto {
     private BigDecimal discountValue;
     private DiscountActive discountActive;
 
+    private Long discountId;
 }
