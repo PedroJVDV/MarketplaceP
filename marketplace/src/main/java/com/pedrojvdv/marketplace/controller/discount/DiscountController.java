@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.controller.discount;
 
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
+import com.pedrojvdv.marketplace.database.repository.Discount.DiscountSelectionProjection;
 import com.pedrojvdv.marketplace.dto.Discount.DiscountDto;
 import com.pedrojvdv.marketplace.enums.Discount.DiscountActive;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
@@ -26,7 +27,7 @@ public class DiscountController {
     //POST
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createDiscount(@Valid @RequestBody DiscountDto discountDto)throws NotFoundException {
+    public void createDiscount(@Valid @RequestBody DiscountDto discountDto) throws NotFoundException{
         discountService.createDiscount(discountDto);
     }
 
@@ -45,25 +46,25 @@ public class DiscountController {
     //GET
     @GetMapping("/filter/discount-value-fil")
     @ResponseStatus(HttpStatus.OK)
-    public List<DiscountDto> getByDiscountValue( @RequestParam BigDecimal discountValue) {
+    public List<DiscountSelectionProjection> getByDiscountValue(@RequestParam BigDecimal discountValue) {
         return discountService.getAllDiscountsByValue(discountValue);
     }
 
     @GetMapping("/filter/discounts-fil")
     @ResponseStatus(HttpStatus.OK)
-    public List<DiscountDto> getAllDiscounts() {
+    public List<DiscountSelectionProjection> getAllDiscounts() {
         return discountService.getAllDiscounts();
     }
 
     @GetMapping("/filter/discount-active-fil")
     @ResponseStatus(HttpStatus.OK)
-    public List<DiscountDto> getActiveDiscounts() {
+    public List<DiscountSelectionProjection> getActiveDiscounts() {
         return discountService.getAllDiscountsActive(DiscountActive.YES);
     }
 
     @GetMapping("/filter/discount-nonActive-fil")
     @ResponseStatus(HttpStatus.OK)
-    public List<DiscountDto> getNonActiveDiscounts() {
+    public List<DiscountSelectionProjection> getNonActiveDiscounts() {
         return discountService.getAllDiscountsInactive(DiscountActive.NO);
     }
 }

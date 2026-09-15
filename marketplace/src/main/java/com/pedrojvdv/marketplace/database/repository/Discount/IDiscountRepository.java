@@ -19,29 +19,29 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
     //TODO: NEW STRUCTURE ABOUT QUERY PARAMS... AT THIS TIME THAT ARE NOT GOOD!
 
     @Query("""
-            SELECT NEW com.pedrojvdv.marketplace.dto.Discount.DiscountDto(d.discountValue, d.discountActive)
+            SELECT d.discountValue AS discountValue, d.discountActive AS discountActive
             FROM DiscountEntity d
-            WHERE d.discountValue = :discount_value
+            WHERE d.discountValue = :discountValue
             """)
-    List<DiscountDto> getByDiscountValue(BigDecimal discountValue);
+    List<DiscountSelectionProjection> getByDiscountValue(BigDecimal discountValue);
 
     @Query("""
-            SELECT NEW com.pedrojvdv.marketplace.dto.Discount.DiscountDto(d.discountValue, d.discountActive)
+            SELECT d.discountValue AS discountValue, d.discountActive AS discountActive
             FROM DiscountEntity d
             """)
-    List<DiscountDto> getAllDiscounts();
+    List<DiscountSelectionProjection> findAllDiscounts();
 
     @Query("""
-            SELECT NEW com.pedrojvdv.marketplace.dto.Discount.DiscountDto(d.discountValue, d.discountActive)
+            SELECT d.discountValue AS discountValue, d.discountActive AS discountActive
             FROM DiscountEntity d
             WHERE d.discountActive = DiscountActive.YES
             """)
-    List<DiscountDto> getByActiveDiscount(DiscountActive discountActive);
+    List<DiscountSelectionProjection> getByActiveDiscount(DiscountActive discountActive);
 
     @Query("""
-            SELECT NEW com.pedrojvdv.marketplace.dto.Discount.DiscountDto(d.discountValue, d.discountActive)
+            SELECT d.discountValue AS discountValue, d.discountActive AS discountActive
             FROM DiscountEntity d
             WHERE d.discountActive = DiscountActive.NO
             """)
-    List<DiscountDto> getByInativeDiscount(DiscountActive discountActive);
+    List<DiscountSelectionProjection> getByInativeDiscount(DiscountActive discountActive);
 }
