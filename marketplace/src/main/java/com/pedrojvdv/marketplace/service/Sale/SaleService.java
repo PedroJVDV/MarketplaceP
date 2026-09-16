@@ -1,7 +1,12 @@
 package com.pedrojvdv.marketplace.service.Sale;
 
+import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
+import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
 
+import com.pedrojvdv.marketplace.database.model.User.UserEntity;
+import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
+import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.Sale.ISaleRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
@@ -13,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,16 +28,30 @@ public class SaleService {
 
     private final ISaleRepository saleRepository;
     private final IUserRepository userRepository;
+    private final IProductRepository productRepository;
+    private final IDiscountRepository discountRepository;
 
 
     @Transactional(rollbackFor = Exception.class)
     public void createSale(SaleDto saleDto) throws NotFoundException {
-        saleRepository.findBySaleLocation(saleDto.getSaleLocation())
-                .ifPresent(sale -> saleRepository.save(SaleEntity.builder()
-                        .saleLocation(saleDto.getSaleLocation())
-                        .quantity(saleDto.getQuantity())
-                        .publishDate(saleDto.getPublishDate())
-                        .build()));
+
+        UserEntity user = userRepository.findById(saleDto.getUserId())
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
+
+        ProductEntity product = productRepository.findById(saleDto.getProductId())
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
+
+        DiscountEntity discount = discountRepository.findById(saleDto.getDiscountId())
+                .orElseThrow(() -> new NotFoundException("Desconto não encontrado!"));
+
+        saleRepository.save(SaleEntity.builder()
+                .saleLocation(saleDto.getSaleLocation())
+                .quantity(saleDto.getQuantity())
+                .publishDate(LocalDateTime.now())
+                .users(user)
+                .product(product)
+                .discount(discount)
+                .build());
     }
 
     public void updateSale(SaleDto saleDto) throws NotFoundException {
@@ -39,7 +59,7 @@ public class SaleService {
                 .ifPresentOrElse(sale -> {
                             sale.setSaleLocation(saleDto.getSaleLocation());
                             sale.setQuantity(saleDto.getQuantity());
-                            sale.setPublishDate(saleDto.getPublishDate());
+                            sale.setPublishDate(saleDto.getPublishDate().toLocalDate().atTime(LocalTime.now()));
                             saleRepository.save(sale);
                         },
                         () -> {
