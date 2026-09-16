@@ -1,8 +1,10 @@
 package com.pedrojvdv.marketplace.service.Order;
 
+import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
 import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
+import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
 import com.pedrojvdv.marketplace.database.repository.Order.IOrderRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
@@ -27,6 +29,7 @@ public class OrderService {
     private final IOrderRepository orderRepository;
     private final IProductRepository productRepository;
     private final IUserRepository userRepository;
+    private final IDiscountRepository discountRepository;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -37,14 +40,18 @@ public class OrderService {
 
         UserEntity user = userRepository.findUserEntityByUsernameLogin(login)
                 .orElseGet(() -> userRepository.findByEmail(login)
-                .orElseThrow(() ->
-                        new BadRequestException("Usuário não encontrado!")));
+                        .orElseThrow(() ->
+                                new NotFoundException("Usuário não encontrado!")));
 
         ProductEntity product = productRepository.findById(orderDto.getProductId())
-                .orElseThrow(() -> new BadRequestException("Produto não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
+
+        DiscountEntity discount = discountRepository.findById(orderDto.getDiscountId())
+                .orElseThrow(() -> new NotFoundException("Desconto não encontrado!"));
 
         orderRepository.save(OrderEntity.builder()
                 .users(user)
+                .discount(discount)
                 .product(product)
                 .quantity(orderDto.getQuantity())
                 .orderTime(LocalDateTime.now())
@@ -99,10 +106,16 @@ public class OrderService {
         dto.setOrderId(p.getId());
         dto.setOrderTime(p.getOrderTime());
         dto.setQuantity(p.getQuantity());
-        dto.setProductId(p.getProduct().getId());
-        dto.setDiscountId(p.getDiscount().getId());
-        dto.setUserId(p.getUsers().getId());
 
+        if (p.getProduct() != null) {
+            dto.setProductId(p.getProduct().getId());
+        }
+        if (p.getDiscount() != null) {
+            dto.setDiscountId(p.getDiscount().getId());
+        }
+        if (p.getUsers() != null) {
+            dto.setUserId(p.getUsers().getId());
+        }
         return dto;
     }
 }

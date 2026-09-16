@@ -15,12 +15,12 @@ public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
 
     List<OrderEntity> findByOrderTime(LocalDateTime orderTime);
 
-    @Query("""
-                    SELECT o FROM OrderEntity o
+    @Query(value = """
+                    SELECT o
+                    FROM OrderEntity o
                     WHERE o.users.id = :userId
-                    AND o.quantity = :quantity
+                    AND o.id IS NOT NULL
             """)
     List<OrderEntity> getAllOrdersByUserId(Long userId);
-
 
 }

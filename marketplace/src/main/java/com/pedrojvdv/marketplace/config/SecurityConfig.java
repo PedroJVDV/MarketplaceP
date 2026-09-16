@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/v1/product/**", "/v1/discount/**", "/v1/order/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers("/v1/product/ticket/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers("/v1/order/**").authenticated()
                         .anyRequest().authenticated()
                 )

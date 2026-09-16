@@ -46,8 +46,8 @@ public class OrderController {
     //GET
     @GetMapping("/{userId}/admin")
     @ResponseStatus(HttpStatus.OK)
-    public void findByOrderId(@PathVariable("userId") Long userId) {
-        orderService.getAllOrdersByUserId(userId);
+    public List<OrderDto> findByOrderId(@PathVariable("userId") Long userId) {
+        return orderService.getAllOrdersByUserId(userId);
     }
 
     @GetMapping("/filter/ordertime")

@@ -12,10 +12,8 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
 
     List<ProductEntity> findByName(String name);
 
-
     @NullMarked
     List<ProductEntity> findAll();
-
 
     List<ProductEntity> findByPriceBetween(BigDecimal priceMin, BigDecimal priceMax);
 

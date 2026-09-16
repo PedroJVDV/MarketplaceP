@@ -4,8 +4,10 @@ import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
 import com.pedrojvdv.marketplace.database.repository.Discount.DiscountSelectionProjection;
 import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
+import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.dto.Discount.DiscountDto;
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
+import com.pedrojvdv.marketplace.dto.Product.ProductDto;
 import com.pedrojvdv.marketplace.enums.Discount.DiscountActive;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +31,7 @@ public class DiscountService {
     @Transactional(rollbackFor = Exception.class)
     public void createDiscount(DiscountDto discountDto) {
 
-        Optional<Long> discountId = discountRepository.findById(discountDto.getDiscountId())
-                .map(DiscountEntity::getId);
-
         DiscountEntity discount = DiscountEntity.builder()
-                .id(discountId.orElse(null))
                 .discountValue(discountDto.getDiscountValue())
                 .discountActive(discountDto.getDiscountActive())
                 .build();

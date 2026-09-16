@@ -7,6 +7,7 @@ import com.pedrojvdv.marketplace.service.Product.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,13 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public void updateProduct(@Valid @RequestBody ProductDto productDto, @PathVariable("productId") Long productId) throws NotFoundException {
         productService.updateProduct(productDto, productId);
+    }
+
+    @PatchMapping("/ticket/{productId}/discount/{discountId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ResponseEntity<Void> addDiscountIntoProduct(@Valid @PathVariable Long productId, @PathVariable Long discountId) throws NotFoundException {
+        productService.addDiscountIntoProduct(productId, discountId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{productId}")

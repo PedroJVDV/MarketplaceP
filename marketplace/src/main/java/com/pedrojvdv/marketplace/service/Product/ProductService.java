@@ -1,7 +1,10 @@
 package com.pedrojvdv.marketplace.service.Product;
 
+import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
+import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
+import com.pedrojvdv.marketplace.dto.Discount.DiscountDto;
 import com.pedrojvdv.marketplace.dto.Product.ProductDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final IProductRepository productRepository;
+    private final IDiscountRepository discountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     public void createProduct(ProductDto productDto) throws BadRequestException {
@@ -29,6 +33,20 @@ public class ProductService {
                 .price(productDto.getPrice())
                 .quantity(productDto.getQuantity())
                 .build());
+    }
+
+    //TICKETS
+    @Transactional(rollbackFor = Exception.class)
+    public void addDiscountIntoProduct(Long productId, Long discountId) throws NotFoundException {
+
+        ProductEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
+
+        DiscountEntity discount = discountRepository.findById(discountId)
+                .orElseThrow(() -> new NotFoundException("Desconto não encontrado!"));
+
+        product.setDiscount(discount);
+        productRepository.save(product);
     }
 
     @Transactional(rollbackFor = Exception.class)
