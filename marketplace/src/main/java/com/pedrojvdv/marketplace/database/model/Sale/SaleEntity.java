@@ -22,7 +22,7 @@ public class SaleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "adress", nullable = false)
+    @Embedded
     private Adress saleLocation;
 
     @Column(nullable = false)

@@ -49,7 +49,7 @@ public class SaleController {
                                           @RequestParam String city,
                                           @RequestParam String hood,
                                           @RequestParam String streetName,
-                                          @RequestParam Integer houseNumber) throws NotFoundException {
+                                          @RequestParam String houseNumber) throws NotFoundException {
         return saleService.getByFullAdress(cep, city, hood, streetName, houseNumber);
     }
 

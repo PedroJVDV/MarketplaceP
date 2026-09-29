@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -164,12 +165,12 @@ public class SaleService {
         return sale;
     }
 
-    public List<SaleDto> getByFullAdress(String cep, String city, String hood, String streetName, Integer houseNumber) throws NotFoundException, BadRequestException {
+    public List<SaleDto> getByFullAdress(String cep, String city, String hood, String streetName, String houseNumber) throws NotFoundException, BadRequestException {
 
         List<SaleDto> sale = saleRepository.findByAdress(cep, city, hood, streetName, houseNumber)
                 .stream()
                 .map(this::toDto)
-                .toList();
+                .collect(Collectors.toList());
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com este endereço!");
         }
