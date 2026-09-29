@@ -13,7 +13,7 @@ public interface ISaleRepository extends JpaRepository<SaleEntity, Long> {
 
     Optional<SaleEntity> findBySaleLocation(Adress adress);
 
-    List<SaleEntity> findByPublishDate(LocalDateTime purchaseDate);
+    List<SaleEntity> findByPublishDateGreaterThanEqualAndPublishDateLessThan(LocalDateTime startOfDay, LocalDateTime StartOfNextDay);
 
     List<SaleEntity> findByUsers_Id(Long userId);
 
