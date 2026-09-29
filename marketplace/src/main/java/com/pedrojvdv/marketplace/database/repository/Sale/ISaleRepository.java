@@ -26,13 +26,13 @@ public interface ISaleRepository extends JpaRepository<SaleEntity, Long> {
     List<SaleEntity> findByCity_Name(String city);
 
     @Query("""
-    SELECT s FROM SaleEntity s
-    WHERE s.saleLocation.cep = :cep
-      AND s.saleLocation.city = :city
-      AND s.saleLocation.neighborhood = :hood
-      AND s.saleLocation.street = :streetName
-      AND s.saleLocation.number = :houseNumber
-    """)
+            SELECT s FROM SaleEntity s
+            WHERE s.saleLocation.cep = :cep
+              AND s.saleLocation.city = :city
+              AND s.saleLocation.neighborhood = :hood
+              AND s.saleLocation.street = :streetName
+              AND s.saleLocation.number = :houseNumber
+            """)
     List<SaleEntity> findByAdress(
             String cep,
             String city,

@@ -1,17 +1,17 @@
 package com.pedrojvdv.marketplace.controller.sale;
 
 
-import com.pedrojvdv.marketplace.database.model.embedabbles.Adress;
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Sale.SaleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +73,8 @@ public class SaleController {
 
     @GetMapping("/filter/date")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByDate(@RequestParam LocalDateTime date) throws NotFoundException {
+    public List<SaleDto> findByDate(@RequestParam
+                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) throws NotFoundException {
         return saleService.getByPublishDate(date);
     }
 

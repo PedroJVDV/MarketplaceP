@@ -10,13 +10,13 @@ import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.Sale.ISaleRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
-import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -113,9 +113,12 @@ public class SaleService {
         }
     }
 
-    public List<SaleDto> getByPublishDate(LocalDateTime publishDate) throws NotFoundException {
+    public List<SaleDto> getByPublishDate(LocalDate publishDate) throws NotFoundException {
+        LocalDateTime startOfDay = publishDate.atStartOfDay();
+        LocalDateTime startOfNextDay = publishDate.plusDays(1).atStartOfDay();
 
-        List<SaleDto> sale = saleRepository.findByPublishDate(publishDate)
+        List<SaleDto> sale = saleRepository.findByPublishDateGreaterThanEqualAndPublishDateLessThan
+                        (startOfDay, startOfNextDay)
                 .stream()
                 .map(this::toDto)
                 .toList();
