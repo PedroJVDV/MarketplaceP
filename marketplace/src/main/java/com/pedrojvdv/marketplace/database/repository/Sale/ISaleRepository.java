@@ -2,6 +2,7 @@ package com.pedrojvdv.marketplace.database.repository.Sale;
 
 import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
 import com.pedrojvdv.marketplace.database.model.embedabbles.Adress;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,11 +12,14 @@ import java.util.Optional;
 
 public interface ISaleRepository extends JpaRepository<SaleEntity, Long> {
 
-    Optional<SaleEntity> findBySaleLocation(Adress adress);
+//    Optional<SaleEntity> findBySaleLocation(Adress adress);
 
     List<SaleEntity> findByPublishDateGreaterThanEqualAndPublishDateLessThan(LocalDateTime startOfDay, LocalDateTime StartOfNextDay);
 
     List<SaleEntity> findByUsers_Id(Long userId);
+
+    @NullMarked
+    Optional<SaleEntity> findById(Long id);
 
     List<SaleEntity> findByQuantity(Integer quantity);
 

@@ -84,8 +84,9 @@ public class SaleService {
                 .findFirst();
         if (sale.isPresent()) {
             return sale;
+        }else {
+            throw new NotFoundException("Venda não encontrada!");
         }
-        throw new NotFoundException("Venda não encontrada!");
     }
 
     public List<SaleDto> getAllSales() throws NotFoundException {
