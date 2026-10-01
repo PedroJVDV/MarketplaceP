@@ -1,5 +1,9 @@
 package com.pedrojvdv.marketplace.enums.User;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
 public enum UserRole {
 
     ADMIN("ADMIN"),
@@ -10,9 +14,6 @@ public enum UserRole {
 
     UserRole(String role){
         this.role = role;
-    }
-    public String getRole() {
-        return role;
     }
 
 }

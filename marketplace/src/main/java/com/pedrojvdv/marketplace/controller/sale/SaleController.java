@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,6 +86,7 @@ public class SaleController {
     }
 
     @GetMapping("/admin/filter/saleID/{saleId}")
+    @PreAuthorize("hasAnyRole('SELLER', 'ADMIN') OR @saleService.getSalesById(authentication.name)")
     @ResponseStatus(HttpStatus.OK)
     public Optional<SaleDto> findBySaleId(@PathVariable("saleId") Long saleId) throws NotFoundException {
         return saleService.getSalesById(saleId);

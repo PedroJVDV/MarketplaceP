@@ -1,14 +1,18 @@
 package com.pedrojvdv.marketplace.config;
 
+import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,13 +23,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
     SecurityFilter securityFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws SecurityException {
         return httpSecurity
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
@@ -40,6 +43,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/v1/product/**", "/v1/discount/**", "/v1/order/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers("/v1/product/ticket/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers("/admin/filter/saleID/{saleId}").hasAnyRole("SELLER", "ADMIN")
+
                         .requestMatchers("/v1/order/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -56,7 +64,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

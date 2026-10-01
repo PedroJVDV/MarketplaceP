@@ -10,9 +10,11 @@ import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.Sale.ISaleRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
+import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +34,8 @@ public class SaleService {
     private final IProductRepository productRepository;
     private final IDiscountRepository discountRepository;
 
-
     @Transactional(rollbackFor = Exception.class)
-    public void createSale(SaleDto saleDto) throws NotFoundException {
+    public void createSale(SaleDto saleDto) throws NotFoundException, BadRequestException {
 
         UserEntity user = userRepository.findById(saleDto.getUserId())
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
@@ -45,14 +46,19 @@ public class SaleService {
         DiscountEntity discount = discountRepository.findById(saleDto.getDiscountId())
                 .orElseThrow(() -> new NotFoundException("Desconto não encontrado!"));
 
-        saleRepository.save(SaleEntity.builder()
-                .saleLocation(saleDto.getSaleLocation())
-                .quantity(saleDto.getQuantity())
-                .publishDate(LocalDateTime.now())
-                .users(user)
-                .product(product)
-                .discount(discount)
-                .build());
+        UserRole userRole = user.getRole();
+        if (userRole.equals(UserRole.SELLER)) {
+            saleRepository.save(SaleEntity.builder()
+                    .saleLocation(saleDto.getSaleLocation())
+                    .quantity(saleDto.getQuantity())
+                    .publishDate(LocalDateTime.now())
+                    .users(user)
+                    .product(product)
+                    .discount(discount)
+                    .build());
+        } else {
+            throw new BadRequestException("Usuário sem permissão de vendedor!");
+        }
     }
 
     public void updateSale(SaleDto saleDto) throws NotFoundException {
@@ -84,7 +90,7 @@ public class SaleService {
                 .findFirst();
         if (sale.isPresent()) {
             return sale;
-        }else {
+        } else {
             throw new NotFoundException("Venda não encontrada!");
         }
     }

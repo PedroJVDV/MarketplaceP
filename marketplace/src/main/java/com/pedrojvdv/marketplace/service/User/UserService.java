@@ -79,7 +79,7 @@ public class UserService {
         return user;
     }
 
-    public Optional<UserDto> getUserByEmail(String email) throws NotFoundException {
+    public void getUserByEmail(String email) throws NotFoundException {
         Optional<UserDto> user = userRepository.findByEmail(email)
                 .stream()
                 .map(this::toDto)
@@ -87,7 +87,6 @@ public class UserService {
         if (user.isEmpty()) {
             throw new NotFoundException("Não existe um usuário com este email!");
         }
-        return user;
     }
 
     public Optional<UserDto> getUserById(Long id) throws NotFoundException {
@@ -101,8 +100,7 @@ public class UserService {
         return user;
     }
 
-    //TODO: STATIC ROLES... (just thinking)
-    public Optional<UserDto> getUserByRole(UserRole userRole) throws NotFoundException {
+    public void getUserByRole(UserRole userRole) throws NotFoundException {
         Optional<UserDto> user = userRepository.findByRole(userRole)
                 .stream()
                 .map(this::toDto)
@@ -110,7 +108,6 @@ public class UserService {
         if (user.isEmpty()) {
             throw new NotFoundException("Usuário com a função especificada não existe!");
         }
-        return user;
     }
 
     private UserDto toDto(UserEntity p) {
