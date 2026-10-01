@@ -48,6 +48,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role(UserRole.ADMIN.name()).implies(UserRole.SELLER.name(), UserRole.USER.name())
+                .role(UserRole.SELLER.name()).implies(UserRole.USER.name())
+                .build();
+    }
+
+    @Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
