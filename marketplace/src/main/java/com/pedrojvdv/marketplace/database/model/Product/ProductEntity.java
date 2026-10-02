@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.database.model.Product;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
@@ -38,10 +39,12 @@ public class ProductEntity {
     private DiscountEntity discount;
 
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<SaleEntity> sale = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private UserEntity users;
 
 }

@@ -1,5 +1,6 @@
 package com.pedrojvdv.marketplace.database.model.Sale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
@@ -33,6 +34,7 @@ public class SaleEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private UserEntity users;
 
     @ManyToOne(fetch = FetchType.LAZY)

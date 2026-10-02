@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.database.model.Wish;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ public class WishListEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private UserEntity users;
 
     @ManyToOne(cascade = CascadeType.ALL)

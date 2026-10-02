@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.database.model.User;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
 import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
@@ -29,6 +30,7 @@ public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)
@@ -39,6 +41,7 @@ public class UserEntity implements UserDetails {
     private String email;
 
     @Column(nullable = false, length = 255)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false, unique = true)
@@ -49,18 +52,23 @@ public class UserEntity implements UserDetails {
     private UserRole role;
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<OrderEntity> orders = new HashSet<>();
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<SaleEntity> sale = new HashSet<>();
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<WishListEntity> wishList = new HashSet<>();
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<ProductEntity> product = new HashSet<>();
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
@@ -74,26 +82,31 @@ public class UserEntity implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
-        return email;
+        return usernameLogin;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }

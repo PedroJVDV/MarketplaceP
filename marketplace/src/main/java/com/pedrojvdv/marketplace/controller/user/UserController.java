@@ -6,10 +6,12 @@ import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -23,20 +25,20 @@ public class UserController {
 
     @GetMapping("/filter/email/admin")
     @ResponseStatus(HttpStatus.OK)
-    public void findByEmail(@RequestParam String email)throws NotFoundException {
-        userService.getUserByEmail(email);
+    public Optional<UserDto> findByEmail(@RequestParam String email)throws NotFoundException {
+        return userService.getUserByEmail(email);
     }
 
     @GetMapping("/filter/role/admin")
     @ResponseStatus(HttpStatus.OK)
-    public void findByRole(@RequestParam UserRole role)throws NotFoundException {
-        userService.getUserByRole(role);
+    public List<UserDto> findByRole(@RequestParam UserRole role)throws NotFoundException {
+        return userService.getUserByRole(role);
     }
 
     @GetMapping("/filter/name/admin")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> findByName(@RequestParam String name)throws NotFoundException {
-        return userService.getUserByName(name);
+    public List<UserDetails> findByName(@RequestParam String name)throws NotFoundException {
+        return userService.getUserByUsernameLogin(name);
     }
 
 }
