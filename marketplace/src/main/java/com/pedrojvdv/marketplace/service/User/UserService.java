@@ -70,8 +70,15 @@ public class UserService {
                 .toList();
     }
 
-    public List<UserDetails> getUserByUsernameLogin(String username) throws NotFoundException {
-        return Stream.of(userRepository.findByUsernameLogin(username)).toList();
+    public Optional<UserDto> getUserByUsernameLogin(String username) throws NotFoundException {
+        Optional<UserDto> user = userRepository.findByUsernameLogin(username)
+                .stream()
+                .map(this::toDto)
+                .findFirst();
+        if (user.isEmpty()) {
+            throw new NotFoundException("Não existe um usuário com este login!");
+        }
+        return user;
     }
 
     public Optional<UserDto> getUserByEmail(String email) throws NotFoundException {
