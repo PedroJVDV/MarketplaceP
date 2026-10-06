@@ -37,7 +37,7 @@ public class UserController {
 
     @GetMapping("/filter/name/admin")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDetails> findByName(@RequestParam String name)throws NotFoundException {
+    public Optional<UserDto> findByName(@RequestParam String name)throws NotFoundException {
         return userService.getUserByUsernameLogin(name);
     }
 
