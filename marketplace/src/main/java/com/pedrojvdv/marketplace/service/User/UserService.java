@@ -2,18 +2,14 @@ package com.pedrojvdv.marketplace.service.User;
 
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
-import com.pedrojvdv.marketplace.dto.User.UserDto;
+import com.pedrojvdv.marketplace.dto.User.UserResponseDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
-import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -63,15 +59,15 @@ public class UserService {
 //                });
 //    }
 
-    public List<UserDto> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(this::toDto)
                 .toList();
     }
 
-    public Optional<UserDto> getUserByUsernameLogin(String username) throws NotFoundException {
-        Optional<UserDto> user = userRepository.findByUsernameLogin(username)
+    public Optional<UserResponseDto> getUserByUsernameLogin(String username) throws NotFoundException {
+        Optional<UserResponseDto> user = userRepository.findByUsernameLogin(username)
                 .stream()
                 .map(this::toDto)
                 .findFirst();
@@ -81,8 +77,8 @@ public class UserService {
         return user;
     }
 
-    public Optional<UserDto> getUserByEmail(String email) throws NotFoundException {
-        Optional<UserDto> user = userRepository.findByEmail(email)
+    public Optional<UserResponseDto> getUserByEmail(String email) throws NotFoundException {
+        Optional<UserResponseDto> user = userRepository.findByEmail(email)
                 .stream()
                 .map(this::toDto)
                 .findFirst();
@@ -92,8 +88,8 @@ public class UserService {
         return user;
     }
 
-    public Optional<UserDto> getUserById(Long id) throws NotFoundException {
-        Optional<UserDto> user = userRepository.findById(id)
+    public Optional<UserResponseDto> getUserById(Long id) throws NotFoundException {
+        Optional<UserResponseDto> user = userRepository.findById(id)
                 .stream()
                 .map(this::toDto)
                 .findFirst();
@@ -103,8 +99,8 @@ public class UserService {
         return user;
     }
 
-    public List<UserDto> getUserByRole(UserRole userRole) throws NotFoundException {
-        List<UserDto> user = userRepository.findByRole(userRole)
+    public List<UserResponseDto> getUserByRole(UserRole userRole) throws NotFoundException {
+        List<UserResponseDto> user = userRepository.findByRole(userRole)
                 .stream()
                 .map(this::toDto)
                 .toList();
@@ -114,8 +110,8 @@ public class UserService {
         return user;
     }
 
-    private UserDto toDto(UserEntity p) {
-        UserDto dto = new UserDto();
+    private UserResponseDto toDto(UserEntity p) {
+        UserResponseDto dto = new UserResponseDto();
         dto.setName(p.getName());
         dto.setEmail(p.getEmail());
         dto.setUserRole(p.getRole());
