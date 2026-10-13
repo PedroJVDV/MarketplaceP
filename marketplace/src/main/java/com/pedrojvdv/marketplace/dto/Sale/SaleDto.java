@@ -1,6 +1,8 @@
 package com.pedrojvdv.marketplace.dto.Sale;
 
 import com.pedrojvdv.marketplace.database.model.embedabbles.Adress;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +15,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SaleDto {
 
+    @NotNull
+    @NotBlank
     private Adress saleLocation;
     private Integer quantity;
+    @NotNull
+    @NotBlank
     private LocalDateTime publishDate;
+
+    @NotNull
+    @NotBlank
     private Long userId;
+    @NotNull
+    @NotBlank
     private Long productId;
     private Long discountId;
 
