@@ -39,12 +39,10 @@ public class ProductEntity {
     private DiscountEntity discount;
 
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<SaleEntity> sale = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private UserEntity users;
 
 }

@@ -33,7 +33,6 @@ public class OrderEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     private UserEntity users;
 
     @ManyToOne(fetch = FetchType.LAZY)
