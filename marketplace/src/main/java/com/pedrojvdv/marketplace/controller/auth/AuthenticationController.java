@@ -2,10 +2,10 @@ package com.pedrojvdv.marketplace.controller.auth;
 
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
-import com.pedrojvdv.marketplace.dto.User.UserDto;
 import com.pedrojvdv.marketplace.dto.auth.AuthenticationDto;
 import com.pedrojvdv.marketplace.dto.auth.LoginResponseDto;
 import com.pedrojvdv.marketplace.dto.auth.RegisterDto;
+import com.pedrojvdv.marketplace.dto.auth.RegisterResponseDto;
 import com.pedrojvdv.marketplace.service.token.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,25 +37,25 @@ public class AuthenticationController {
     @Autowired
     private IUserRepository userRepository;
 
-
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid AuthenticationDto dataDto) {
+    public ResponseEntity<Object> login(@RequestBody @Valid AuthenticationDto dataDto) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(dataDto.getUsernameLogin(), dataDto.getPassword());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
+        var token = tokenService.generateToken((UserEntity)
+                Objects.requireNonNull(auth.getPrincipal()));
 
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid RegisterDto registerDto) {
-        if (userRepository.findByEmail(registerDto.getEmail()).isPresent() || userRepository.findByUsernameLogin(registerDto.getUsernameLogin()) != null) {
+    public ResponseEntity<Void> register(@RequestBody @Valid RegisterResponseDto registerDto) {
+        if (userRepository.findByEmail(registerDto.getEmail()).isPresent() || userRepository.findByUsernameLogin(registerDto.getUsernameLogin()).isPresent()) {
             return ResponseEntity.badRequest().build();
         }
 
         String password = new BCryptPasswordEncoder().encode(registerDto.getPassword());
-        UserEntity userEntity = new UserEntity(registerDto.getUsername(), registerDto.getEmail(),registerDto.getUsernameLogin(), password, registerDto.getRole());
+        UserEntity userEntity = new UserEntity(registerDto.getUsername(), registerDto.getEmail(),registerDto.getUsernameLogin(), password, registerDto.getUserRole());
 
         this.userRepository.save(userEntity);
 
