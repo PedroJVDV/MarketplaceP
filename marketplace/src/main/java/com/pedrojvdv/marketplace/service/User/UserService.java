@@ -3,7 +3,9 @@ package com.pedrojvdv.marketplace.service.User;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.User.UserResponseDto;
+import com.pedrojvdv.marketplace.dto.User.UserUpdateDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
+import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,47 +19,46 @@ public class UserService {
 
     private final IUserRepository userRepository;
 
-//    public void createUser(UserDto userDto) throws BadRequestException {
-//        UserEntity user = userRepository.findByEmail(userDto.getEmail())
-//                .orElse(null);
-//
-//        if (user != null) {
-//            throw new BadRequestException("Já existe um usuário cadastrado com esse email!");
-//        }
-//
-//        userRepository.save(UserEntity.builder()
-//                .name(userDto.getName())
-//                .email(userDto.getEmail())
-//                .role(UserRole.USER)
-//                .build());
-//    }
+    public void createUser(UserUpdateDto userDto) throws BadRequestException {
+        UserEntity user = userRepository.findByEmail(userDto.getEmail())
+                .orElse(null);
 
-//    public void updateUser(UserDto userDto, String email) throws NotFoundException {
-//        userRepository.findByEmail(email)
-//                .ifPresentOrElse(user -> {
-//                            user.setName(userDto.getName());
-//                            user.setEmail(userDto.getEmail());
-//                            user.setPassword(userDto.getPassword());
-//                            user.setRole(userDto.getUserRole());
-//                            userRepository.save(user);
-//                        },
-//                        () -> {
-//                            throw new NotFoundException("Usuário com esse email não existe!");
-//                        });
-//    }
+        if (user != null) {
+            throw new BadRequestException("Já existe um usuário cadastrado com esse email!");
+        }
 
-//    public void deleteUser(String email, String password, UserDto userDto) throws NotFoundException {
-//        userRepository.findByEmail(email)
-//                .ifPresentOrElse(user -> {
-//                    if (userDto.getPassword().equals(password) && user.getEmail().equals(email)) {
-//                        userRepository.delete(user);
-//                    } else {
-//                        throw new NotFoundException("Senha incorreta!");
-//                    }
-//                }, () -> {
-//                    throw new NotFoundException("Usuario com esse email não existe ou email incorreto!");
-//                });
-//    }
+        userRepository.save(UserEntity.builder()
+                .name(userDto.getUsername())
+                .email(userDto.getEmail())
+                .role(UserRole.USER)
+                .build());
+    }
+
+    public void updateUser(UserUpdateDto userDto, String email) throws NotFoundException {
+        userRepository.findByEmail(email)
+                .ifPresentOrElse(user -> {
+                            user.setName(userDto.getUsername());
+                            user.setEmail(userDto.getEmail());
+                            user.setRole(userDto.getUserRole());
+                            userRepository.save(user);
+                        },
+                        () -> {
+                            throw new NotFoundException("Usuário com esse email não existe!");
+                        });
+    }
+
+    public void deleteUser(String email, String password, UserUpdateDto userDto) throws NotFoundException {
+        userRepository.findByEmail(email)
+                .ifPresentOrElse(user -> {
+                    if (userDto.getPassword().equals(password) && user.getEmail().equals(email)) {
+                        userRepository.delete(user);
+                    } else {
+                        throw new NotFoundException("Senha incorreta!");
+                    }
+                }, () -> {
+                    throw new NotFoundException("Usuario com esse email não existe ou email incorreto!");
+                });
+    }
 
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()
@@ -112,6 +113,8 @@ public class UserService {
 
     private UserResponseDto toDto(UserEntity p) {
         UserResponseDto dto = new UserResponseDto();
+        dto.setId(p.getId());
+        dto.setUsernameLogin(p.getUsername());
         dto.setName(p.getName());
         dto.setEmail(p.getEmail());
         dto.setUserRole(p.getRole());

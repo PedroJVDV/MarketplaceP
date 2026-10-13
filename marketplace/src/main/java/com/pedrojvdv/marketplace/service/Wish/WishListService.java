@@ -6,13 +6,13 @@ import com.pedrojvdv.marketplace.database.model.Wish.WishListEntity;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.database.repository.Wish.IWishListRepository;
-import com.pedrojvdv.marketplace.dto.User.UserDto;
 import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +65,7 @@ public class WishListService {
         return wish;
     }
 
-    public List<WishListDto> getWishListByUserId(Long userId) throws NotFoundException {
+    public void getWishListByUserId(Long userId) throws NotFoundException {
         List<WishListDto> wish = wishListRepository.findByUsers_Id(userId)
                 .stream()
                 .map(this::toDto)
@@ -74,10 +74,9 @@ public class WishListService {
         if (wish.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejos encontrada para este usuário!");
         }
-        return wish;
     }
 
-    public List<WishListDto> getWishListByUserEmail(String email) throws NotFoundException {
+    public void getWishListByUserEmail(String email) throws NotFoundException {
         List<WishListDto> wish = wishListRepository.findByUsers_Email(email)
                 .stream()
                 .map(this::toDto)
@@ -86,7 +85,6 @@ public class WishListService {
         if (wish.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejo encontrada para este email de usuário!");
         }
-        return wish;
     }
 
     private WishListDto toDto(WishListEntity p) {

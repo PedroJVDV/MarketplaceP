@@ -9,18 +9,14 @@ import com.pedrojvdv.marketplace.database.repository.Order.IOrderRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
-import com.pedrojvdv.marketplace.dto.Product.ProductDto;
-import com.pedrojvdv.marketplace.dto.User.UserDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +26,6 @@ public class OrderService {
     private final IProductRepository productRepository;
     private final IUserRepository userRepository;
     private final IDiscountRepository discountRepository;
-
 
     @Transactional(rollbackFor = Exception.class)
     public void createOrder(OrderDto orderDto, String login) throws BadRequestException {
