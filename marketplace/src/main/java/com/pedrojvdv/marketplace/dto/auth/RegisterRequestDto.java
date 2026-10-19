@@ -1,6 +1,5 @@
 package com.pedrojvdv.marketplace.dto.auth;
 
-import com.pedrojvdv.marketplace.enums.User.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,11 +12,12 @@ import lombok.*;
 @NoArgsConstructor
 @NotNull
 @NotBlank
-public class RegisterDto {
+public class RegisterRequestDto {
 
     String username;
     @Email
     String email;
     String usernameLogin;
     String password;
+    // DEFAULT ROLE == USER!
 }

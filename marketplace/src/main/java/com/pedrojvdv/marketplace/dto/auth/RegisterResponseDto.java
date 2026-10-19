@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Getter
 @Setter
@@ -19,6 +20,4 @@ public class RegisterResponseDto {
     @Email
     String email;
     String usernameLogin;
-    String password;
-    UserRole userRole;
 }

@@ -24,7 +24,8 @@ public class UserUpdateDto {
     private String username;
     @NotBlank
     @NotNull
-    private UserRole userRole;
+    //DEFAULT ROLE -> USER
+    private UserRole userRole = UserRole.USER;
     @NotBlank
     @NotNull
     private String password;
