@@ -1,5 +1,6 @@
 package com.pedrojvdv.marketplace;
 
+import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -7,7 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class MarketplaceApplicationTests {
 
 	@Test
-	void contextLoads() {
+	public void OrderServiceTest(){
+		OrderEntity orderEntity = new OrderEntity();
 	}
 
 }
