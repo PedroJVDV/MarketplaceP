@@ -94,3 +94,13 @@ Antes disso, o backend está sendo revisado para garantir uma base mais segura, 
 O projeto passará por novas mudanças e receberá serviços maiores no futuro. Alguns desses serviços ainda não podem ser divulgados, mas a estrutura atual está sendo preparada para permitir essa evolução.
 
 O MarketplaceP continuará sendo desenvolvido de forma gradual, com foco em uma base sólida para novas funcionalidades e integrações.
+
+> ## Aviso importante sobre a licença
+
+Antes de acessar, executar, copiar ou utilizar este projeto, leia atentamente o arquivo [`LICENSE`](./LICENSE).
+
+Este projeto está protegido por uma **licença proprietária personalizada**. O acesso público ao repositório não concede autorização para usar, copiar, modificar, adaptar, distribuir, publicar, comercializar ou incorporar qualquer parte deste projeto em outro produto ou serviço.
+
+Qualquer utilização, total ou parcial, depende de **autorização prévia e expressa, por escrito, do titular**. A ausência de autorização poderá constituir violação dos direitos aplicáveis e sujeitar o responsável às medidas legais cabíveis.
+
+A simples visualização, clonagem ou download do repositório não representa concessão de licença ou permissão de uso.
