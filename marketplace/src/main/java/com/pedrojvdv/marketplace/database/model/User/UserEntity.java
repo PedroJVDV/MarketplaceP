@@ -9,6 +9,8 @@ import com.pedrojvdv.marketplace.database.model.Wish.WishListEntity;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,6 +32,8 @@ public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
+    @NotEmpty
     private Long id;
 
     @Column(nullable = false)
@@ -37,17 +41,25 @@ public class UserEntity implements UserDetails {
 
     @Email(message = "Email inválido")
     @Column(unique = true, nullable = false)
+    @NotNull
+    @NotEmpty
     private String email;
 
     @Column(nullable = false, length = 255)
+    @NotNull
+    @NotEmpty
     private String password;
 
     @Column(nullable = false, unique = true)
+    @NotNull
+    @NotEmpty
     private String usernameLogin;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
+    @NotNull
+    @NotEmpty
+    private UserRole role = UserRole.USER;
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private Set<OrderEntity> orders = new HashSet<>();
