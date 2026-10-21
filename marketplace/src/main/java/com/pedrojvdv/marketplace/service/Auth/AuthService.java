@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService {
+public class AuthService {
 
     private final TokenService tokenService;
 
@@ -32,27 +32,15 @@ public class AuthService implements UserDetailsService {
 
     private final IUserRepository userRepository;
 
+    public ResponseEntity<LoginResponseDto> loginAuth(AuthenticationDto dataDto) {
 
-    @NullMarked
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsernameLogin(username)
-                .orElseThrow(() -> new UsernameNotFoundException("usuário não encontado: " + username
-                ));
-    }
+        var credentials = new UsernamePasswordAuthenticationToken(dataDto.getUsernameLogin(), dataDto.getPassword());
+        var auth = this.authenticationManager.authenticate(credentials);
 
-    public ResponseEntity<Object> loginAuth(AuthenticationDto dataDto) {
+        var token = tokenService.generateToken((UserEntity)
+                Objects.requireNonNull(auth.getPrincipal()));
 
-        if (userRepository.findByUsernameLogin(dataDto.getUsernameLogin()).isPresent()){
-            var usernamePassword = new UsernamePasswordAuthenticationToken(dataDto.getUsernameLogin(), dataDto.getPassword());
-            var auth = this.authenticationManager.authenticate(usernamePassword);
-
-            var token = tokenService.generateToken((UserEntity)
-                    Objects.requireNonNull(auth.getPrincipal()));
-
-            return ResponseEntity.ok(new LoginResponseDto(token));
-        }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
     public ResponseEntity<Void> registerAuth(RegisterRequestDto registerDto) {

@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.controller.auth;
 
 import com.pedrojvdv.marketplace.dto.auth.AuthenticationDto;
+import com.pedrojvdv.marketplace.dto.auth.LoginResponseDto;
 import com.pedrojvdv.marketplace.dto.auth.RegisterRequestDto;
 
 import com.pedrojvdv.marketplace.service.Auth.AuthService;
@@ -23,7 +24,7 @@ public class AuthenticationController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid AuthenticationDto dataDto) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid AuthenticationDto dataDto) {
         return authService.loginAuth(dataDto);
     }
 
