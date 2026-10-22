@@ -13,8 +13,14 @@ import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
+import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
+import com.pedrojvdv.marketplace.service.Auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +39,13 @@ public class SaleService {
     private final IUserRepository userRepository;
     private final IProductRepository productRepository;
     private final IDiscountRepository discountRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public void createSale(SaleDto saleDto) throws NotFoundException, BadRequestException {
 
-        UserEntity user = userRepository.findById(saleDto.getUserId())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
+        UserEntity user = authenticatedUserService.getCurrentAuthenticatedUser();
 
         ProductEntity product = productRepository.findById(saleDto.getProductId())
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
@@ -46,21 +53,23 @@ public class SaleService {
         DiscountEntity discount = discountRepository.findById(saleDto.getDiscountId())
                 .orElseThrow(() -> new NotFoundException("Desconto não encontrado!"));
 
-        UserRole userRole = user.getRole();
-        if (userRole.equals(UserRole.SELLER)) {
-            saleRepository.save(SaleEntity.builder()
-                    .saleLocation(saleDto.getSaleLocation())
-                    .quantity(saleDto.getQuantity())
-                    .publishDate(LocalDateTime.now())
-                    .users(user)
-                    .product(product)
-                    .discount(discount)
-                    .build());
-        } else {
+        if (user.getRole() != UserRole.SELLER && user.getRole() != UserRole.ADMIN) {
             throw new BadRequestException("Usuário sem permissão de vendedor!");
         }
+
+        SaleEntity saleEntity = SaleEntity.builder()
+                .saleLocation(saleDto.getSaleLocation())
+                .quantity(saleDto.getQuantity())
+                .publishDate(LocalDateTime.now())
+                .product(product)
+                .users(user)
+                .discount(discount)
+                .build();
+        saleRepository.save(saleEntity);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public void updateSale(SaleDto saleDto) throws NotFoundException {
         saleRepository.findById(saleDto.getUserId())
                 .ifPresentOrElse(sale -> {
@@ -74,6 +83,8 @@ public class SaleService {
                         });
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public void deleteSale(Long id) throws NotFoundException {
         saleRepository.findById(id)
                 .ifPresentOrElse(saleRepository::delete,
@@ -82,6 +93,8 @@ public class SaleService {
                         });
     }
 
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
+    @Transactional(readOnly = true)
     public Optional<SaleDto> getSalesById(Long id) throws NotFoundException {
 
         Optional<SaleDto> sale = saleRepository.findById(id)
@@ -95,6 +108,8 @@ public class SaleService {
         }
     }
 
+    @PreAuthorize("permitAll()")
+    @Transactional(readOnly = true)
     public List<SaleDto> getAllSales() throws NotFoundException {
 
         List<SaleDto> sale = saleRepository.findAll()
@@ -107,6 +122,8 @@ public class SaleService {
         return sale;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
     public List<SaleDto> getSaleByUserId(Long userId) throws NotFoundException {
 
         List<SaleDto> sale = saleRepository.findByUsers_Id(userId)
@@ -120,6 +137,8 @@ public class SaleService {
         }
     }
 
+    @PreAuthorize("permitAll()")
+    @Transactional(readOnly = true)
     public List<SaleDto> getByPublishDate(LocalDate publishDate) throws NotFoundException {
         LocalDateTime startOfDay = publishDate.atStartOfDay();
         LocalDateTime startOfNextDay = publishDate.plusDays(1).atStartOfDay();
@@ -135,6 +154,8 @@ public class SaleService {
         return sale;
     }
 
+    @PreAuthorize("permitAll()")
+    @Transactional(readOnly = true)
     public List<SaleDto> getByQuantity(Integer quantity) throws NotFoundException {
 
         List<SaleDto> sale = saleRepository.findByQuantity(quantity)
@@ -147,6 +168,8 @@ public class SaleService {
         return sale;
     }
 
+    @PreAuthorize("permitAll()")
+    @Transactional(readOnly = true)
     public List<SaleDto> getSaleByCep(String cepNumber) throws NotFoundException, BadRequestException {
 
         List<SaleDto> sale = saleRepository.findByCep_Number(cepNumber)
@@ -163,6 +186,8 @@ public class SaleService {
         return sale;
     }
 
+    @PreAuthorize("permitAll()")
+    @Transactional(readOnly = true)
     public List<SaleDto> getSaleByCity(String city) throws NotFoundException, BadRequestException {
 
         List<SaleDto> sale = saleRepository.findByCity_Name(city)
@@ -175,7 +200,10 @@ public class SaleService {
         return sale;
     }
 
-    public List<SaleDto> getByFullAdress(String cep, String city, String hood, String streetName, String houseNumber) throws NotFoundException, BadRequestException {
+    @PreAuthorize("permitAll()")
+    @Transactional(readOnly = true)
+    public List<SaleDto> getSalesByFullAdress(String cep, String city, String hood, String streetName, String
+            houseNumber) throws NotFoundException, BadRequestException {
 
         List<SaleDto> sale = saleRepository.findByAdress(cep, city, hood, streetName, houseNumber)
                 .stream()

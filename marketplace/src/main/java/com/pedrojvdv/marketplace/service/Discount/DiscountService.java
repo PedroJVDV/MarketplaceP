@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,6 +29,7 @@ public class DiscountService {
 
     private final IDiscountRepository discountRepository;
 
+    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMIN')")
     @Transactional(rollbackFor = Exception.class)
     public void createDiscount(DiscountDto discountDto) {
 
@@ -39,6 +41,7 @@ public class DiscountService {
         discountRepository.save(discount);
     }
 
+    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMIN')")
     @Transactional(rollbackFor = Exception.class)
     public void updateDiscount(DiscountDto discountDto, Long discountId) throws BadRequestException {
         DiscountEntity discount = discountRepository.findById(discountId)
@@ -50,10 +53,10 @@ public class DiscountService {
         if (discountDto.getDiscountActive() != null) {
             discount.setDiscountActive(discountDto.getDiscountActive());
         }
-
         discountRepository.save(discount);
     }
 
+    @PreAuthorize("hasRole('SELLER') OR hasRole('ADMIN')")
     @Transactional(rollbackFor = Exception.class)
     public void deleteDiscount(Long id) throws NotFoundException {
         DiscountEntity discount = discountRepository.findById(id)

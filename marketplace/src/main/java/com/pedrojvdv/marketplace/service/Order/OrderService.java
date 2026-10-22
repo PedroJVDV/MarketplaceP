@@ -11,7 +11,11 @@ import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
+import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,19 +28,17 @@ public class OrderService {
 
     private final IOrderRepository orderRepository;
     private final IProductRepository productRepository;
-    private final IUserRepository userRepository;
     private final IDiscountRepository discountRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("isAuthenticated()")
     public void createOrder(OrderDto orderDto, String login) throws BadRequestException {
         if (login == null || login.isBlank()) {
             throw new BadRequestException("Login autenticado inválido.");
         }
 
-        UserEntity user = userRepository.findUserEntityByUsernameLogin(login)
-                .orElseGet(() -> userRepository.findByEmail(login)
-                        .orElseThrow(() ->
-                                new NotFoundException("Usuário não encontrado!")));
+        UserEntity user = authenticatedUserService.getCurrentAuthenticatedUser();
 
         ProductEntity product = productRepository.findById(orderDto.getProductId())
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
@@ -54,6 +56,7 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("isAuthenticated()")
     public void updateOrder(OrderDto orderDto) throws NotFoundException {
         OrderEntity order = orderRepository.findByQuantity(orderDto.getQuantity())
                 .orElseThrow(() -> new NotFoundException("Quantidade não definida para esta ordem!"));
@@ -65,6 +68,7 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("isAuthenticated()")
     public void deleteOrder(Long id) throws NotFoundException {
         OrderEntity order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order inexistente!"));

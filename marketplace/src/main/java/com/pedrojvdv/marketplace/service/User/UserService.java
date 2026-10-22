@@ -8,7 +8,9 @@ import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,8 @@ public class UserService {
 
     private final IUserRepository userRepository;
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public void createUser(UserUpdateDto userDto) throws BadRequestException {
         UserEntity user = userRepository.findByEmail(userDto.getEmail())
                 .orElse(null);
@@ -33,7 +37,8 @@ public class UserService {
                 .role(UserRole.USER)
                 .build());
     }
-
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateUser(UserUpdateDto userDto, String email) throws NotFoundException {
         userRepository.findByEmail(email)
                 .ifPresentOrElse(user -> {
@@ -47,6 +52,8 @@ public class UserService {
                         });
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String email, String password, UserUpdateDto userDto) throws NotFoundException {
         userRepository.findByEmail(email)
                 .ifPresentOrElse(user -> {
@@ -60,6 +67,8 @@ public class UserService {
                 });
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
@@ -67,6 +76,8 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<UserResponseDto> getUserByUsernameLogin(String username) throws NotFoundException {
         Optional<UserResponseDto> user = userRepository.findByUsernameLogin(username)
                 .stream()
@@ -78,6 +89,8 @@ public class UserService {
         return user;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<UserResponseDto> getUserByEmail(String email) throws NotFoundException {
         Optional<UserResponseDto> user = userRepository.findByEmail(email)
                 .stream()
@@ -89,6 +102,8 @@ public class UserService {
         return user;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<UserResponseDto> getUserById(Long id) throws NotFoundException {
         Optional<UserResponseDto> user = userRepository.findById(id)
                 .stream()
@@ -100,6 +115,8 @@ public class UserService {
         return user;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDto> getUserByRole(UserRole userRole) throws NotFoundException {
         List<UserResponseDto> user = userRepository.findByRole(userRole)
                 .stream()

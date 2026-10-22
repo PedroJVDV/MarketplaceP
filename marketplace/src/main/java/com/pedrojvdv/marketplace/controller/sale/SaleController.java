@@ -51,7 +51,7 @@ public class SaleController {
                                           @RequestParam String hood,
                                           @RequestParam String streetName,
                                           @RequestParam String houseNumber) throws NotFoundException {
-        return saleService.getByFullAdress(cep, city, hood, streetName, houseNumber);
+        return saleService.getSalesByFullAdress(cep, city, hood, streetName, houseNumber);
     }
 
     @GetMapping("/filter/city")

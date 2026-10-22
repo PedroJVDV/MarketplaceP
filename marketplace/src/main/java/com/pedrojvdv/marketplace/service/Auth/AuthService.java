@@ -8,15 +8,13 @@ import com.pedrojvdv.marketplace.dto.auth.RegisterRequestDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -25,13 +23,11 @@ import java.util.Objects;
 public class AuthService {
 
     private final TokenService tokenService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
-
     private final IUserRepository userRepository;
 
+    @PreAuthorize("permitAll()")
     public ResponseEntity<LoginResponseDto> loginAuth(AuthenticationDto dataDto) {
 
         var credentials = new UsernamePasswordAuthenticationToken(dataDto.getUsernameLogin(), dataDto.getPassword());
@@ -43,6 +39,8 @@ public class AuthService {
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
+    @PreAuthorize("permitAll()")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<Void> registerAuth(RegisterRequestDto registerDto) {
         if (userRepository.findByEmail(registerDto.getEmail()).isPresent() || userRepository.findByUsernameLogin(registerDto.getUsernameLogin()).isPresent()) {
             return ResponseEntity.badRequest().build();
@@ -59,7 +57,6 @@ public class AuthService {
         );
 
         this.userRepository.save(userEntity);
-
         return ResponseEntity.ok().build();
     }
 }

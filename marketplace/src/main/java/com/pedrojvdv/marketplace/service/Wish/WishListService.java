@@ -8,8 +8,11 @@ import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.database.repository.Wish.IWishListRepository;
 import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
+import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +22,14 @@ import java.util.Optional;
 public class WishListService {
 
     private final IWishListRepository wishListRepository;
-    private final IUserRepository userRepository;
     private final IProductRepository productRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
+    @PreAuthorize("isAuthenticated()")
+    @Transactional(rollbackFor = Exception.class)
     public void createWishList(WishListDto wishListDto) {
-        UserEntity user = userRepository.findById(wishListDto.getUserId())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
+
+        UserEntity user = authenticatedUserService.getCurrentAuthenticatedUser();
 
         ProductEntity product = productRepository.findById(wishListDto.getProductId())
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
@@ -35,6 +40,8 @@ public class WishListService {
                 .build());
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @Transactional(rollbackFor = Exception.class)
     public void updateWishList(WishListDto wishListDto) throws NotFoundException {
         wishListRepository.findById(wishListDto.getId())
                 .ifPresentOrElse(wish -> {
@@ -46,6 +53,8 @@ public class WishListService {
                 });
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @Transactional(rollbackFor = Exception.class)
     public void deleteWishList(Long id) throws NotFoundException {
         wishListRepository.findById(id).ifPresentOrElse(wishListRepository::delete,
                 () -> {
@@ -53,6 +62,7 @@ public class WishListService {
         });
     }
 
+    @PreAuthorize("isAuthenticated()")
     public List<WishListDto> getAllWishLists() {
         List<WishListDto> wish = wishListRepository.findAll()
                 .stream()
@@ -65,6 +75,7 @@ public class WishListService {
         return wish;
     }
 
+    @PreAuthorize("isAuthenticated()")
     public void getWishListByUserId(Long userId) throws NotFoundException {
         List<WishListDto> wish = wishListRepository.findByUsers_Id(userId)
                 .stream()
@@ -76,6 +87,7 @@ public class WishListService {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     public void getWishListByUserEmail(String email) throws NotFoundException {
         List<WishListDto> wish = wishListRepository.findByUsers_Email(email)
                 .stream()
