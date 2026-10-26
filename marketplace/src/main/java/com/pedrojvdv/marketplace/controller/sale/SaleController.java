@@ -2,6 +2,7 @@ package com.pedrojvdv.marketplace.controller.sale;
 
 
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
+import com.pedrojvdv.marketplace.dto.Sale.SaleResponseDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Sale.SaleService;
 import jakarta.validation.Valid;
@@ -46,7 +47,7 @@ public class SaleController {
     //GET
     @GetMapping("/filter/full-adress")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByFullAdress(@RequestParam String cep,
+    public List<SaleResponseDto> findByFullAdress(@RequestParam String cep,
                                           @RequestParam String city,
                                           @RequestParam String hood,
                                           @RequestParam String streetName,
@@ -56,45 +57,44 @@ public class SaleController {
 
     @GetMapping("/filter/city")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByCity(@RequestParam String city) throws NotFoundException {
+    public List<SaleResponseDto> findByCity(@RequestParam String city) throws NotFoundException {
         return saleService.getSaleByCity(city);
     }
 
     @GetMapping("/filter/cep")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByCep(@RequestParam String cep) throws NotFoundException {
+    public List<SaleResponseDto> findByCep(@RequestParam String cep) throws NotFoundException {
         return saleService.getSaleByCep(cep);
     }
 
     @GetMapping("/filter/quantity")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByQuantity(@RequestParam Integer quantity) throws NotFoundException {
+    public List<SaleResponseDto> findByQuantity(@RequestParam Integer quantity) throws NotFoundException {
         return saleService.getByQuantity(quantity);
     }
 
     @GetMapping("/filter/date")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByDate(@RequestParam
+    public List<SaleResponseDto> findByDate(@RequestParam
                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) throws NotFoundException {
         return saleService.getByPublishDate(date);
     }
 
-    @GetMapping("/admin/filter/saleUID/{userId}")
+    @GetMapping("/filter/saleUID/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> findByUserId(@PathVariable("userId") Long userId) throws NotFoundException {
+    public Optional<SaleDto> findByUserId(@PathVariable("userId") Long userId) throws NotFoundException {
         return saleService.getSaleByUserId(userId);
     }
 
-    @GetMapping("/admin/filter/saleID/{saleId}")
-    @PreAuthorize("hasAnyRole('SELLER', 'ADMIN') OR @saleService.getSalesById(authentication.name)")
+    @GetMapping("/filter/saleID/{saleId}")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<SaleDto> findBySaleId(@PathVariable("saleId") Long saleId) throws NotFoundException {
+    public Optional<SaleResponseDto> findBySaleId(@PathVariable("saleId") Long saleId) throws NotFoundException {
         return saleService.getSalesById(saleId);
     }
 
     @GetMapping("/filter/sales")
     @ResponseStatus(HttpStatus.OK)
-    public List<SaleDto> getAllSales() throws NotFoundException {
+    public List<SaleResponseDto> getAllSales() throws NotFoundException {
         return saleService.getAllSales();
     }
 }

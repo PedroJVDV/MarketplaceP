@@ -10,17 +10,13 @@ import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.Sale.ISaleRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Sale.SaleDto;
+import com.pedrojvdv.marketplace.dto.Sale.SaleResponseDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
-import com.pedrojvdv.marketplace.service.Auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,13 +89,13 @@ public class SaleService {
                         });
     }
 
-    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated() and hasRole('SELLER') or hasRole('ADMIN')")
     @Transactional(readOnly = true)
-    public Optional<SaleDto> getSalesById(Long id) throws NotFoundException {
+    public Optional<SaleResponseDto> getSalesById(Long id) throws NotFoundException {
 
-        Optional<SaleDto> sale = saleRepository.findById(id)
+        Optional<SaleResponseDto> sale = saleRepository.findById(id)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .findFirst();
         if (sale.isPresent()) {
             return sale;
@@ -110,11 +106,11 @@ public class SaleService {
 
     @PreAuthorize("permitAll()")
     @Transactional(readOnly = true)
-    public List<SaleDto> getAllSales() throws NotFoundException {
+    public List<SaleResponseDto> getAllSales() throws NotFoundException {
 
-        List<SaleDto> sale = saleRepository.findAll()
+        List<SaleResponseDto> sale = saleRepository.findAll()
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada no sistema!");
@@ -124,29 +120,29 @@ public class SaleService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
-    public List<SaleDto> getSaleByUserId(Long userId) throws NotFoundException {
+    public Optional<SaleDto> getSaleByUserId(Long userId) throws NotFoundException {
 
-        List<SaleDto> sale = saleRepository.findByUsers_Id(userId)
+        Optional<SaleDto> sale = saleRepository.findByUsers_Id(userId)
                 .stream()
                 .map(this::toDto)
-                .toList();
+                .findFirst();
         if (userRepository.existsById(userId)) {
             return sale;
         } else {
-            throw new NotFoundException("Usuário não encontrado!");
+            throw new NotFoundException("Usuário com ID informado não encontrado!");
         }
     }
 
     @PreAuthorize("permitAll()")
     @Transactional(readOnly = true)
-    public List<SaleDto> getByPublishDate(LocalDate publishDate) throws NotFoundException {
+    public List<SaleResponseDto> getByPublishDate(LocalDate publishDate) throws NotFoundException {
         LocalDateTime startOfDay = publishDate.atStartOfDay();
         LocalDateTime startOfNextDay = publishDate.plusDays(1).atStartOfDay();
 
-        List<SaleDto> sale = saleRepository.findByPublishDateGreaterThanEqualAndPublishDateLessThan
+        List<SaleResponseDto> sale = saleRepository.findByPublishDateGreaterThanEqualAndPublishDateLessThan
                         (startOfDay, startOfNextDay)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com a data especificada!");
@@ -156,11 +152,11 @@ public class SaleService {
 
     @PreAuthorize("permitAll()")
     @Transactional(readOnly = true)
-    public List<SaleDto> getByQuantity(Integer quantity) throws NotFoundException {
+    public List<SaleResponseDto> getByQuantity(Integer quantity) throws NotFoundException {
 
-        List<SaleDto> sale = saleRepository.findByQuantity(quantity)
+        List<SaleResponseDto> sale = saleRepository.findByQuantity(quantity)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com a quantidade especificada!");
@@ -170,11 +166,11 @@ public class SaleService {
 
     @PreAuthorize("permitAll()")
     @Transactional(readOnly = true)
-    public List<SaleDto> getSaleByCep(String cepNumber) throws NotFoundException, BadRequestException {
+    public List<SaleResponseDto> getSaleByCep(String cepNumber) throws NotFoundException, BadRequestException {
 
-        List<SaleDto> sale = saleRepository.findByCep_Number(cepNumber)
+        List<SaleResponseDto> sale = saleRepository.findByCep_Number(cepNumber)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com o CEP especificado!");
@@ -188,11 +184,11 @@ public class SaleService {
 
     @PreAuthorize("permitAll()")
     @Transactional(readOnly = true)
-    public List<SaleDto> getSaleByCity(String city) throws NotFoundException, BadRequestException {
+    public List<SaleResponseDto> getSaleByCity(String city) throws NotFoundException, BadRequestException {
 
-        List<SaleDto> sale = saleRepository.findByCity_Name(city)
+        List<SaleResponseDto> sale = saleRepository.findByCity_Name(city)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .toList();
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com a cidade especificada!");
@@ -202,17 +198,30 @@ public class SaleService {
 
     @PreAuthorize("permitAll()")
     @Transactional(readOnly = true)
-    public List<SaleDto> getSalesByFullAdress(String cep, String city, String hood, String streetName, String
+    public List<SaleResponseDto> getSalesByFullAdress(String cep, String city, String hood, String streetName, String
             houseNumber) throws NotFoundException, BadRequestException {
 
-        List<SaleDto> sale = saleRepository.findByAdress(cep, city, hood, streetName, houseNumber)
+        List<SaleResponseDto> sale = saleRepository.findByAdress(cep, city, hood, streetName, houseNumber)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoFromUser)
                 .collect(Collectors.toList());
         if (sale.isEmpty()) {
             throw new NotFoundException("Nenhuma venda encontrada com este endereço!");
         }
         return sale;
+    }
+
+    private SaleResponseDto toDtoFromUser(SaleEntity p) {
+        SaleResponseDto dto = new SaleResponseDto();
+
+        dto.setPublishDate(p.getPublishDate());
+        dto.setQuantity(p.getQuantity());
+        dto.setSaleLocation(p.getSaleLocation());
+        dto.setUsername(p.getUsers().getUsername());
+        dto.setProductName(p.getProduct().getName());
+        dto.setDiscountValue(p.getDiscount().getDiscountValue());
+
+        return dto;
     }
 
     private SaleDto toDto(SaleEntity p) {
@@ -222,8 +231,8 @@ public class SaleService {
         dto.setQuantity(p.getQuantity());
         dto.setSaleLocation(p.getSaleLocation());
         dto.setProductId(p.getProduct().getId());
-        dto.setUserId(p.getUsers().getId());
         dto.setDiscountId(p.getDiscount().getId());
+        dto.setUserId(p.getUsers().getId());
 
         return dto;
     }

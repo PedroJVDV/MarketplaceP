@@ -19,7 +19,14 @@ import java.math.BigDecimal;
 @NotBlank
 public class ProductDto {
 
+    @NotNull
+    private Long id;
+    private Long discountId;
+    @NotBlank
+    @NotNull
     private String name;
+    @NotBlank
+    @NotNull
     private BigDecimal price;
     private Integer quantity;
 

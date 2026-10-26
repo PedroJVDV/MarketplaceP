@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.controller.product;
 
 import com.pedrojvdv.marketplace.dto.Product.ProductDto;
+import com.pedrojvdv.marketplace.dto.Product.ProductResponseDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Product.ProductService;
@@ -31,7 +32,7 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateProduct(@Valid @RequestBody ProductDto productDto, @PathVariable("productId") Long productId) throws NotFoundException {
+    public void updateProduct(@Valid @RequestBody ProductResponseDto productDto, @PathVariable("productId") Long productId) throws NotFoundException {
         productService.updateProduct(productDto, productId);
     }
 
@@ -51,49 +52,49 @@ public class ProductController {
     //GET
     @GetMapping("/all-products")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findAll()throws NotFoundException {
+    public List<ProductResponseDto> findAll()throws NotFoundException {
         return productService.getAllProducts();
     }
 
     @GetMapping("/price-filter-bet")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByBetweenFilter(@RequestParam BigDecimal minPrice, @RequestParam BigDecimal maxPrice) throws NotFoundException {
+    public List<ProductResponseDto> findByBetweenFilter(@RequestParam BigDecimal minPrice, @RequestParam BigDecimal maxPrice) throws NotFoundException {
         return productService.getByPriceBetween(minPrice, maxPrice);
     }
 
     @GetMapping("/price-fitler-gre")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByGreaterThan(@RequestParam BigDecimal price) throws NotFoundException {
+    public List<ProductResponseDto> findByGreaterThan(@RequestParam BigDecimal price) throws NotFoundException {
          return productService.getByPriceGreaterThan(price);
     }
 
     @GetMapping("/price-filter-les")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByLessThan(@RequestParam BigDecimal price) throws NotFoundException {
+    public List<ProductResponseDto> findByLessThan(@RequestParam BigDecimal price) throws NotFoundException {
         return productService.getByPriceLessThan(price);
     }
 
     @GetMapping("/price")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByPrice(@RequestParam BigDecimal price)throws NotFoundException{
+    public List<ProductResponseDto> findByPrice(@RequestParam BigDecimal price)throws NotFoundException{
         return productService.getByPrice(price);
     }
 
     @GetMapping("/quantity")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByQuantity(@RequestParam Integer quantity)throws NotFoundException{
+    public List<ProductResponseDto> findByQuantity(@RequestParam Integer quantity)throws NotFoundException{
         return productService.getByQuantity(quantity);
     }
 
     @GetMapping("/discount-products")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByDiscountProducts()throws NotFoundException{
+    public List<ProductResponseDto> findByDiscountProducts()throws NotFoundException{
         return productService.getProductWithDiscount();
     }
 
     @GetMapping("/no-discount-products")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> findByNoDiscountProducts()throws NotFoundException{
+    public List<ProductResponseDto> findByNoDiscountProducts()throws NotFoundException{
         return productService.getProductWithoutDiscount();
     }
 

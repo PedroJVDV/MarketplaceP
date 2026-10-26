@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SaleDto {
 
+    //ONLY FOR
     @NotNull
     @NotBlank
     private Adress saleLocation;
@@ -22,7 +23,6 @@ public class SaleDto {
     @NotNull
     @NotBlank
     private LocalDateTime publishDate;
-
     @NotNull
     @NotBlank
     private Long userId;
