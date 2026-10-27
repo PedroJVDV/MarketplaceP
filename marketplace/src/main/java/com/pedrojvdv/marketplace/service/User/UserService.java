@@ -2,8 +2,9 @@ package com.pedrojvdv.marketplace.service.User;
 
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
+import com.pedrojvdv.marketplace.dto.User.UserAdminInputDto;
+import com.pedrojvdv.marketplace.dto.User.UserAdminResponseDto;
 import com.pedrojvdv.marketplace.dto.User.UserResponseDto;
-import com.pedrojvdv.marketplace.dto.User.UserUpdateDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
@@ -23,7 +24,7 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public void createUser(UserUpdateDto userDto) throws BadRequestException {
+    public void createUser(UserAdminInputDto userDto) throws BadRequestException {
         UserEntity user = userRepository.findByEmail(userDto.getEmail())
                 .orElse(null);
 
@@ -34,17 +35,20 @@ public class UserService {
         userRepository.save(UserEntity.builder()
                 .name(userDto.getUsername())
                 .email(userDto.getEmail())
+                .usernameLogin(userDto.getUsernameLogin())
+                .age(userDto.getAge())
                 .role(UserRole.USER)
                 .build());
     }
+
     @Transactional(rollbackFor = Exception.class)
-    @PreAuthorize("hasRole('ADMIN')")
-    public void updateUser(UserUpdateDto userDto, String email) throws NotFoundException {
-        userRepository.findByEmail(email)
+    @PreAuthorize("isAuthenticated() && hasAnyRole('USER', 'SELLER', 'ADMIN')")
+    public void updateUser(UserResponseDto userDto) throws NotFoundException {
+        userRepository.findByEmail(userDto.getEmail())
                 .ifPresentOrElse(user -> {
                             user.setName(userDto.getUsername());
                             user.setEmail(userDto.getEmail());
-                            user.setRole(userDto.getUserRole());
+                            user.setPassword(userDto.getPassword());
                             userRepository.save(user);
                         },
                         () -> {
@@ -54,10 +58,10 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUser(String email, String password, UserUpdateDto userDto) throws NotFoundException {
-        userRepository.findByEmail(email)
+    public void deleteUser( UserAdminInputDto userDto) throws NotFoundException {
+        userRepository.findByEmail(userDto.getEmail())
                 .ifPresentOrElse(user -> {
-                    if (userDto.getPassword().equals(password) && user.getEmail().equals(email)) {
+                    if (user.getEmail().equals(userDto.getEmail())) {
                         userRepository.delete(user);
                     } else {
                         throw new NotFoundException("Senha incorreta!");
@@ -69,19 +73,19 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponseDto> getAllUsers() {
+    public List<UserAdminResponseDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoResponseUser)
                 .toList();
     }
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public Optional<UserResponseDto> getUserByUsernameLogin(String username) throws NotFoundException {
-        Optional<UserResponseDto> user = userRepository.findByUsernameLogin(username)
+    public Optional<UserAdminResponseDto> getUserByUsernameLogin(String username) throws NotFoundException {
+        Optional<UserAdminResponseDto> user = userRepository.findByUsernameLogin(username)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoResponseUser)
                 .findFirst();
         if (user.isEmpty()) {
             throw new NotFoundException("Não existe um usuário com este login!");
@@ -91,10 +95,10 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public Optional<UserResponseDto> getUserByEmail(String email) throws NotFoundException {
-        Optional<UserResponseDto> user = userRepository.findByEmail(email)
+    public Optional<UserAdminResponseDto> getUserByEmail(String email) throws NotFoundException {
+        Optional<UserAdminResponseDto> user = userRepository.findByEmail(email)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoResponseUser)
                 .findFirst();
         if (user.isEmpty()) {
             throw new NotFoundException("Não existe um usuário com este email!");
@@ -104,10 +108,10 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public Optional<UserResponseDto> getUserById(Long id) throws NotFoundException {
-        Optional<UserResponseDto> user = userRepository.findById(id)
+    public Optional<UserAdminResponseDto> getUserById(Long id) throws NotFoundException {
+        Optional<UserAdminResponseDto> user = userRepository.findById(id)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoResponseUser)
                 .findFirst();
         if (user.isEmpty()) {
             throw new NotFoundException("Nenhum usuário encontrado com este ID!");
@@ -117,10 +121,10 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponseDto> getUserByRole(UserRole userRole) throws NotFoundException {
-        List<UserResponseDto> user = userRepository.findByRole(userRole)
+    public List<UserAdminResponseDto> getUserByRole(UserRole userRole) throws NotFoundException {
+        List<UserAdminResponseDto> user = userRepository.findByRole(userRole)
                 .stream()
-                .map(this::toDto)
+                .map(this::toDtoResponseUser)
                 .toList();
         if (user.isEmpty()) {
             throw new NotFoundException("Usuário com a função especificada não existe!");
@@ -128,13 +132,21 @@ public class UserService {
         return user;
     }
 
-    private UserResponseDto toDto(UserEntity p) {
+    private UserResponseDto toDtoInputUser(UserEntity user) {
         UserResponseDto dto = new UserResponseDto();
-        dto.setId(p.getId());
-        dto.setUsernameLogin(p.getUsername());
-        dto.setName(p.getName());
-        dto.setEmail(p.getEmail());
-        dto.setUserRole(p.getRole());
+        dto.setUsername(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setPassword(user.getPassword());
+        return dto;
+    }
+
+    private UserAdminResponseDto toDtoResponseUser(UserEntity user) {
+        UserAdminResponseDto dto = new UserAdminResponseDto();
+        dto.setId(user.getId());
+        dto.setUsernameLogin(user.getUsername());
+        dto.setUsername(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setUserRole(user.getRole());
         return dto;
     }
 }

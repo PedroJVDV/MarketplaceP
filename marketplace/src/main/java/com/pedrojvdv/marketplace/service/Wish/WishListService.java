@@ -4,9 +4,9 @@ import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.model.Wish.WishListEntity;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
-import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.database.repository.Wish.IWishListRepository;
-import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
+import com.pedrojvdv.marketplace.dto.Wish.WishListAdminResponseDto;
+import com.pedrojvdv.marketplace.dto.Wish.WishListResponseDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,27 +26,29 @@ public class WishListService {
 
     @PreAuthorize("isAuthenticated()")
     @Transactional(rollbackFor = Exception.class)
-    public void createWishList(WishListDto wishListDto) {
+    public void createWishList(WishListResponseDto wishListResponseDto) {
 
         UserEntity user = authenticatedUserService.getCurrentAuthenticatedUser();
+        ProductEntity product = productRepository.findByPublicIdAndQuantityGreaterThan(wishListResponseDto.getProductCode(), 0)
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado ou indisponível!"));
 
-        ProductEntity product = productRepository.findById(wishListDto.getProductId())
-                .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
-
-        wishListRepository.save(WishListEntity.builder()
+        WishListEntity wishList = WishListEntity.builder()
                 .users(user)
                 .product(product)
-                .build());
+                .build();
+
+        wishListRepository.save(wishList);
     }
 
     @PreAuthorize("isAuthenticated()")
     @Transactional(rollbackFor = Exception.class)
-    public void updateWishList(WishListDto wishListDto) throws NotFoundException {
-        wishListRepository.findById(wishListDto.getId())
-                .ifPresentOrElse(wish -> {
-                    wish.setProduct(wish.getProduct());
-                    wish.setUsers(wish.getUsers());
-                    wishListRepository.save(wish);
+    public void updateWishList(WishListResponseDto wishListResponseDto) throws NotFoundException {
+
+        wishListRepository.findByWishListGroupName(wishListResponseDto.getWishListGroupName())
+                .ifPresentOrElse(wishList -> {
+                    wishList.setWishListGroupName(wishListResponseDto.getWishListGroupName());
+
+                    wishListRepository.save(wishList);
                 }, () -> {
                     throw new NotFoundException("Lista de desejos não encontrada!");
                 });
@@ -55,18 +56,19 @@ public class WishListService {
 
     @PreAuthorize("isAuthenticated()")
     @Transactional(rollbackFor = Exception.class)
-    public void deleteWishList(Long id) throws NotFoundException {
-        wishListRepository.findById(id).ifPresentOrElse(wishListRepository::delete,
-                () -> {
-                throw new NotFoundException("ID da lista de desejos é inexistente!");
-        });
+    public void deleteWishList() throws NotFoundException {
+        wishListRepository.findByUsers_Id(authenticatedUserService.getCurrentAuthenticatedUser().getId())
+                .ifPresentOrElse(wishListRepository::delete,
+                        () -> {
+                            throw new NotFoundException("Nenhuma lista de desejos vinculada a este usuário!");
+                        });
     }
 
     @PreAuthorize("isAuthenticated()")
-    public List<WishListDto> getAllWishLists() {
-        List<WishListDto> wish = wishListRepository.findAll()
+    public List<WishListAdminResponseDto> getAllWishLists() {
+        List<WishListAdminResponseDto> wish = wishListRepository.findAll()
                 .stream()
-                .map(this::toDto)
+                .map(this::toAdminDto)
                 .toList();
 
         if (wish.isEmpty()) {
@@ -77,9 +79,9 @@ public class WishListService {
 
     @PreAuthorize("isAuthenticated()")
     public void getWishListByUserId(Long userId) throws NotFoundException {
-        List<WishListDto> wish = wishListRepository.findByUsers_Id(userId)
+        List<WishListAdminResponseDto> wish = wishListRepository.findByUsers_Id(userId)
                 .stream()
-                .map(this::toDto)
+                .map(this::toAdminDto)
                 .toList();
 
         if (wish.isEmpty()) {
@@ -89,9 +91,9 @@ public class WishListService {
 
     @PreAuthorize("isAuthenticated()")
     public void getWishListByUserEmail(String email) throws NotFoundException {
-        List<WishListDto> wish = wishListRepository.findByUsers_Email(email)
+        List<WishListAdminResponseDto> wish = wishListRepository.findByUsers_Email(email)
                 .stream()
-                .map(this::toDto)
+                .map(this::toAdminDto)
                 .toList();
 
         if (wish.isEmpty()) {
@@ -99,12 +101,26 @@ public class WishListService {
         }
     }
 
-    private WishListDto toDto(WishListEntity p) {
-        WishListDto dto = new WishListDto();
+    //TODO: USER METHODS --> 28/10
+    private WishListResponseDto toUserDto(WishListEntity wishListEntity) {
+        WishListResponseDto dto = new WishListResponseDto();
+
+        dto.setWishListGroupName(wishListEntity.getWishListGroupName());
+        dto.setProductCode(wishListEntity.getProduct().getPublicId());
+
+        return dto;
+    }
+
+    private WishListAdminResponseDto toAdminDto(WishListEntity p) {
+        WishListAdminResponseDto dto = new WishListAdminResponseDto();
 
         dto.setId(p.getId());
         dto.setUserId(p.getUsers().getId());
         dto.setProductId(p.getProduct().getId());
+        dto.setProductName(p.getProduct().getName());
+        dto.setProductPrice(p.getProduct().getPrice());
+        dto.setWishListGroupName(p.getWishListGroupName());
+
         return dto;
     }
 }

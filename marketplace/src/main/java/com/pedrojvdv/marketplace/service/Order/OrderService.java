@@ -76,6 +76,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("isAuthenticated()")
     public List<OrderDto> getAllOrders() {
         return orderRepository.findAll()
                 .stream()
@@ -92,6 +93,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public List<OrderDto> getAllOrdersByUserId(Long userId) {
         return orderRepository.getAllOrdersByUserId(userId)
                 .stream()
