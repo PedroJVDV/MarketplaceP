@@ -1,5 +1,6 @@
 package com.pedrojvdv.marketplace.dto.Sale;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pedrojvdv.marketplace.database.model.embedabbles.Adress;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class SaleDto {
     private Integer quantity;
     @NotNull
     @NotBlank
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime publishDate;
     @NotNull
     @NotBlank
