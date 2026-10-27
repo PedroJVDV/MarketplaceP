@@ -1,6 +1,6 @@
 package com.pedrojvdv.marketplace.controller.user;
 
-import com.pedrojvdv.marketplace.dto.User.UserResponseDto;
+import com.pedrojvdv.marketplace.dto.User.UserAdminResponseDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.User.UserService;
@@ -22,21 +22,21 @@ public class UserController {
 
     //NOW, THIS CLASS IS MANAGED ONLY BY ADMINS!
 
-    @GetMapping("/filter/email/admin")
+    @GetMapping("/filter/email")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<UserResponseDto> findByEmail(@RequestParam String email)throws NotFoundException {
+    public Optional<UserAdminResponseDto> findByEmail(@RequestParam String email)throws NotFoundException {
         return userService.getUserByEmail(email);
     }
 
-    @GetMapping("/filter/role/admin")
+    @GetMapping("/filter/role")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserResponseDto> findByRole(@RequestParam UserRole role)throws NotFoundException {
+    public List<UserAdminResponseDto> findByRole(@RequestParam UserRole role)throws NotFoundException {
         return userService.getUserByRole(role);
     }
 
-    @GetMapping("/filter/name/admin")
+    @GetMapping("/filter/name")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<UserResponseDto> findByName(@RequestParam String name)throws NotFoundException {
+    public Optional<UserAdminResponseDto> findByName(@RequestParam String name)throws NotFoundException {
         return userService.getUserByUsernameLogin(name);
     }
 

@@ -37,14 +37,14 @@ public class OrderController {
         orderService.updateOrder(orderDto);
     }
 
-    @DeleteMapping("/{orderId}")
+    @DeleteMapping("/filter/{orderId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@Valid @PathVariable("orderId") Long orderId) throws NotFoundException {
         orderService.deleteOrder(orderId);
     }
 
     //GET
-    @GetMapping("/{userId}/admin")
+    @GetMapping("/filter/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderDto> findByOrderId(@PathVariable("userId") Long userId) {
         return orderService.getAllOrdersByUserId(userId);

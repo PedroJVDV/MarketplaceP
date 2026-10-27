@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/product")
@@ -32,14 +33,14 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateProduct(@Valid @RequestBody ProductResponseDto productDto, @PathVariable("productId") Long productId) throws NotFoundException {
+    public void updateProduct(@Valid @RequestBody ProductResponseDto productDto, @PathVariable("productId") UUID productId) throws NotFoundException {
         productService.updateProduct(productDto, productId);
     }
 
-    @PatchMapping("/ticket/{productId}/discount/{discountId}")
+    @PatchMapping("/ticket/{productPublicId}/discount/{discountId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<Void> addDiscountIntoProduct(@Valid @PathVariable Long productId, @PathVariable Long discountId) throws NotFoundException {
-        productService.addDiscountIntoProduct(productId, discountId);
+    public ResponseEntity<Void> addDiscountIntoProduct(@Valid @PathVariable UUID productPublicId, @PathVariable Long discountId) throws NotFoundException {
+        productService.addDiscountIntoProduct(productPublicId, discountId);
         return ResponseEntity.noContent().build();
     }
 

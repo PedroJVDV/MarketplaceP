@@ -1,7 +1,8 @@
 package com.pedrojvdv.marketplace.controller.wishList;
 
 
-import com.pedrojvdv.marketplace.dto.Wish.WishListDto;
+import com.pedrojvdv.marketplace.dto.Wish.WishListAdminResponse;
+import com.pedrojvdv.marketplace.dto.Wish.WishListResponseDto;
 import com.pedrojvdv.marketplace.service.Wish.WishListService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,20 +23,20 @@ public class WishListController {
     //POST,DELETE
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createWishList(@Valid @RequestBody WishListDto wishListDto) {
-        wishListService.createWishList(wishListDto);
+    public void createWishList(@Valid @RequestBody WishListResponseDto wishListResponseDto) {
+        wishListService.createWishList(wishListResponseDto);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateWishList(@Valid @RequestBody WishListDto wishListDto) {
-        wishListService.updateWishList(wishListDto);
+    public void updateWishList(@Valid @RequestBody WishListResponseDto wishListResponseDto) {
+        wishListService.updateWishList(wishListResponseDto);
     }
 
-    @DeleteMapping("/{wishId}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWishList(@Valid @PathVariable Long wishId) {
-        wishListService.deleteWishList(wishId);
+    public void deleteWishList() {
+        wishListService.deleteWishList();
     }
 
     //GET
@@ -53,7 +54,7 @@ public class WishListController {
 
     @GetMapping("/filter/wishlists")
     @ResponseStatus(HttpStatus.OK)
-    public List<WishListDto> getWishLists() {
+    public List<WishListAdminResponse> getWishLists() {
         return wishListService.getAllWishLists();
     }
 }
