@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
 
@@ -14,6 +16,10 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
 
     @NullMarked
     List<ProductEntity> findAll();
+
+    Optional<ProductEntity> findByPublicId(UUID id);
+
+    Optional<ProductEntity> findByPublicIdAndQuantityGreaterThan(UUID publicId, Integer quantity);
 
     List<ProductEntity> findByPriceBetween(BigDecimal priceMin, BigDecimal priceMax);
 
