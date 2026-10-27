@@ -1,7 +1,7 @@
 package com.pedrojvdv.marketplace.controller.wishList;
 
 
-import com.pedrojvdv.marketplace.dto.Wish.WishListAdminResponse;
+import com.pedrojvdv.marketplace.dto.Wish.WishListAdminResponseDto;
 import com.pedrojvdv.marketplace.dto.Wish.WishListResponseDto;
 import com.pedrojvdv.marketplace.service.Wish.WishListService;
 import jakarta.validation.Valid;
@@ -54,7 +54,7 @@ public class WishListController {
 
     @GetMapping("/filter/wishlists")
     @ResponseStatus(HttpStatus.OK)
-    public List<WishListAdminResponse> getWishLists() {
+    public List<WishListAdminResponseDto> getWishLists() {
         return wishListService.getAllWishLists();
     }
 }
