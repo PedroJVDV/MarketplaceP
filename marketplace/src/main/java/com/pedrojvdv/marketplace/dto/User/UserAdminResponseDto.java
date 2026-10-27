@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.dto.User;
 
 import com.pedrojvdv.marketplace.enums.User.UserRole;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,21 +13,19 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserUpdateDto {
+public class UserAdminResponseDto {
 
-    // ONLY FOR INPUT RESPONSES
-    @NotBlank
+    private Long id;
     @NotNull
-    private String usernameLogin;
     @NotBlank
-    @NotNull
-    private String email;
     private String username;
-    @NotBlank
+    @Email
+    private String email;
     @NotNull
-    //DEFAULT ROLE -> USER
-    private UserRole userRole = UserRole.USER;
     @NotBlank
+    private String usernameLogin;
+    private Integer age;
     @NotNull
-    private String password;
+    @NotBlank
+    private UserRole userRole;
 }

@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.dto.User;
 
-import com.pedrojvdv.marketplace.enums.User.UserRole;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserResponseDto {
 
-    private Long id;
-    private String name;
+    @NotBlank
+    @NotNull
     private String email;
-    private String usernameLogin;
+    @NotBlank
+    @NotNull
+    private String username;
+
     private Integer age;
-    private UserRole userRole;
+    @NotBlank
+    @NotNull
+    private String password;
 }
