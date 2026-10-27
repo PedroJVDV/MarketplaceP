@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.dto.Order;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class OrderDto {
     private Integer quantity;
     @NotNull
     @NotBlank
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime orderTime;
 
     @NotNull
