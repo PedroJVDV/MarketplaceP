@@ -19,6 +19,9 @@ public class WishListEntity {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "wishList_group_name",  nullable = false, unique = true)
+    private String wishListGroupName;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity users;
@@ -26,5 +29,9 @@ public class WishListEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_name", nullable = false)
+    private ProductEntity productName;
 
 }
