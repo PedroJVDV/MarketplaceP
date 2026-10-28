@@ -85,6 +85,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public List<OrderDto> getByOrderTime(LocalDateTime orderTime) {
         return orderRepository.findByOrderTime(orderTime)
                 .stream()

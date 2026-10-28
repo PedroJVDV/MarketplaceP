@@ -3,7 +3,6 @@ package com.pedrojvdv.marketplace.config;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.security.SecurityFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,28 +29,30 @@ public class SecurityConfig {
     private final SecurityFilter securityFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
-
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/auth/login", "/v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/v1/product/**", "/v1/discount/**").hasAnyRole("SELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/product/**", "/v1/discount/**", "/v1/order/**").hasAnyRole("SELLER", "ADMIN")
+
+
+                        //PRODUCT, SALE, DISCOUNT AND ORDER - SECURITY FILTER METHODS
+                        .requestMatchers(HttpMethod.POST, "/v1/product/**", "/v1/discount/**", "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/v1/product/**", "/v1/discount/**", "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/v1/product/**", "/v1/discount/**", "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/v1/product/**", "/v1/discount/**", "/v1/order/**", "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers("/v1/product/ticket/**").hasAnyRole("SELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/sale/**").hasAnyRole("SELLER", "ADMIN")
+
                         .requestMatchers("/filter/saleID/{saleId}").hasAnyRole("SELLER", "ADMIN")
 
+                        .requestMatchers("/v1/user/**").authenticated()
                         .requestMatchers("/v1/order/**").authenticated()
                         .anyRequest().authenticated()
                 )

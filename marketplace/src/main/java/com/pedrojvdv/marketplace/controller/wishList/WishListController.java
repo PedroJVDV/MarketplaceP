@@ -46,6 +46,12 @@ public class WishListController {
         wishListService.getWishListByUserEmail(email);
     }
 
+    @GetMapping("/myWishList")
+    @ResponseStatus(HttpStatus.OK)
+    public List<WishListResponseDto> getUserWishList() {
+        return wishListService.getUserWishList();
+    }
+
     @GetMapping("/filter/{userId}/admin")
     @ResponseStatus(HttpStatus.OK)
     public void findByUserId(@Valid @PathVariable Long userId) {

@@ -23,5 +23,13 @@ public class WishListResponseDto {
 
     @NotNull
     @NotBlank
+    private String productName;
+
+    @NotNull
+    @NotBlank
+    private BigDecimal productPrice;
+
+    @NotNull
+    @NotBlank
     private String wishListGroupName;
 }

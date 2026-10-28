@@ -95,19 +95,30 @@ public class WishListService {
                 .stream()
                 .map(this::toAdminDto)
                 .toList();
-
         if (wish.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejo encontrada para este email de usuário!");
         }
     }
 
-    //TODO: USER METHODS --> 28/10
+    @PreAuthorize("isAuthenticated() && hasAnyRole('USER', 'SELLER', 'ADMIN')")
+    public List<WishListResponseDto> getUserWishList() throws NotFoundException {
+        List<WishListResponseDto> wishList = wishListRepository.findWishListByUsers_id(authenticatedUserService.getCurrentAuthenticatedUser().getId())
+                .stream()
+                .map(this::toUserDto)
+                .toList();
+        if (wishList.isEmpty()) {
+            throw new NotFoundException("Nenhuma lista de desejos encontrada para este usuário!");
+        }
+        return wishList;
+    }
+
     private WishListResponseDto toUserDto(WishListEntity wishListEntity) {
         WishListResponseDto dto = new WishListResponseDto();
 
         dto.setWishListGroupName(wishListEntity.getWishListGroupName());
         dto.setProductCode(wishListEntity.getProduct().getPublicId());
-
+        dto.setProductName(wishListEntity.getProduct().getName());
+        dto.setProductPrice(wishListEntity.getProduct().getPrice());
         return dto;
     }
 
