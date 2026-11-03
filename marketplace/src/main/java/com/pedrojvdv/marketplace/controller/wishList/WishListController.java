@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/wishlist")
@@ -42,8 +43,8 @@ public class WishListController {
     //GET
     @GetMapping("/filter/email")
     @ResponseStatus(HttpStatus.OK)
-    public void findByEmail(@RequestParam String email) {
-        wishListService.getWishListByUserEmail(email);
+    public Optional<WishListAdminResponseDto> findByEmail(@RequestParam String email) {
+        return wishListService.getWishListByUserEmail(email);
     }
 
     @GetMapping("/myWishList")
@@ -54,8 +55,8 @@ public class WishListController {
 
     @GetMapping("/filter/{userId}/admin")
     @ResponseStatus(HttpStatus.OK)
-    public void findByUserId(@Valid @PathVariable Long userId) {
-        wishListService.getWishListByUserId(userId);
+    public List<WishListAdminResponseDto> findByUserId(@Valid @PathVariable Long userId) {
+        return wishListService.getWishListByUserId(userId);
     }
 
     @GetMapping("/filter/wishlists")

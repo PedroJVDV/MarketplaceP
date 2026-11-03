@@ -1,6 +1,7 @@
 package com.pedrojvdv.marketplace.database.repository.Discount;
 
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
+import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
 import com.pedrojvdv.marketplace.dto.Discount.DiscountDto;
 import com.pedrojvdv.marketplace.enums.Discount.DiscountActive;
 import org.jspecify.annotations.NullMarked;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long> {
 
@@ -44,4 +46,6 @@ public interface IDiscountRepository extends JpaRepository<DiscountEntity, Long>
             WHERE d.discountActive = DiscountActive.NO
             """)
     List<DiscountSelectionProjection> getByInativeDiscount(DiscountActive discountActive);
+
+    Long product(Set<ProductEntity> product);
 }

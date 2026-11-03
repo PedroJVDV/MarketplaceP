@@ -33,13 +33,13 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateProduct(@Valid @RequestBody ProductResponseDto productDto, @PathVariable("productId") UUID productId) throws NotFoundException {
+    public void updateProduct(@Valid @RequestBody ProductResponseDto productDto, @PathVariable("productId") String productId) throws NotFoundException {
         productService.updateProduct(productDto, productId);
     }
 
     @PatchMapping("/ticket/{productPublicId}/discount/{discountId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<Void> addDiscountIntoProduct(@Valid @PathVariable UUID productPublicId, @PathVariable Long discountId) throws NotFoundException {
+    public ResponseEntity<Void> addDiscountIntoProduct(@Valid @PathVariable String productPublicId, @PathVariable Long discountId) throws NotFoundException {
         productService.addDiscountIntoProduct(productPublicId, discountId);
         return ResponseEntity.noContent().build();
     }

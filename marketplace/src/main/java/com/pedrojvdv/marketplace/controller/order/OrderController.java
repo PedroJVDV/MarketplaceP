@@ -1,6 +1,8 @@
 package com.pedrojvdv.marketplace.controller.order;
 
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
+import com.pedrojvdv.marketplace.dto.Order.OrderResponseDto;
+import com.pedrojvdv.marketplace.dto.Order.OrderUpdateDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Order.OrderService;
 import jakarta.validation.Valid;
@@ -31,9 +33,9 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping
+    @PatchMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void updateOrder(@Valid @RequestBody OrderDto orderDto) throws NotFoundException {
+    public void updateOrder(@Valid @RequestBody OrderUpdateDto orderDto) throws NotFoundException {
         orderService.updateOrder(orderDto);
     }
 

@@ -32,7 +32,7 @@ public class SaleController {
         saleService.createSale(saleDto);
     }
 
-    @PutMapping
+    @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public void updateSale(@Valid @RequestBody SaleDto saleDto) throws NotFoundException {
         saleService.updateSale(saleDto);

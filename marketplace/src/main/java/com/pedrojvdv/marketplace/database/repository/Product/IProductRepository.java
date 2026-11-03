@@ -17,9 +17,9 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
     @NullMarked
     List<ProductEntity> findAll();
 
-    Optional<ProductEntity> findByPublicId(UUID id);
+    Optional<ProductEntity> findByPublicId(String id);
 
-    Optional<ProductEntity> findByPublicIdAndQuantityGreaterThan(UUID publicId, Integer quantity);
+    Optional<ProductEntity> findByPublicIdAndQuantityGreaterThan(String publicId, Integer quantity);
 
     List<ProductEntity> findByPriceBetween(BigDecimal priceMin, BigDecimal priceMax);
 
