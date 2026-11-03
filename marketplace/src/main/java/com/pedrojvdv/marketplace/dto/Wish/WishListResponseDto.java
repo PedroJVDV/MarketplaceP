@@ -19,16 +19,13 @@ public class WishListResponseDto {
 
     @NotNull
     @NotBlank
-    private UUID productCode;
-
+    private String productCode;
     @NotNull
     @NotBlank
     private String productName;
-
     @NotNull
     @NotBlank
     private BigDecimal productPrice;
-
     @NotNull
     @NotBlank
     private String wishListGroupName;

@@ -20,6 +20,13 @@ import java.math.BigDecimal;
 public class ProductDto {
 
     @NotNull
+    @NotBlank
+    private String publicId;
+    @NotNull
+    @NotBlank
+    private Long userId;
+    @NotNull
+    @NotBlank
     private Long id;
     private Long discountId;
     @NotBlank

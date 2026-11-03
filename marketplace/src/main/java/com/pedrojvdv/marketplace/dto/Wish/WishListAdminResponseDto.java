@@ -28,7 +28,6 @@ public class WishListAdminResponseDto {
     @NotNull
     @NotBlank
     private BigDecimal productPrice;
-
     @NotNull
     @NotBlank
     private String wishListGroupName;

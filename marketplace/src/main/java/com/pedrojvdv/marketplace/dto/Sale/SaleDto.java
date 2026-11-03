@@ -16,7 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SaleDto {
 
-    //ONLY FOR
+    @NotNull
+    @NotBlank
+    private Long saleId;
     @NotNull
     @NotBlank
     private Adress saleLocation;
