@@ -67,7 +67,7 @@ public class SaleService {
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public void updateSale(SaleDto saleDto) throws NotFoundException {
-        saleRepository.findById(saleDto.getUserId())
+        saleRepository.findById(saleDto.getSaleId())
                 .ifPresentOrElse(sale -> {
                             sale.setSaleLocation(saleDto.getSaleLocation());
                             sale.setQuantity(saleDto.getQuantity());

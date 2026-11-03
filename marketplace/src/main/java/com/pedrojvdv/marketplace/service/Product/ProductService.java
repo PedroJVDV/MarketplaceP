@@ -2,6 +2,7 @@ package com.pedrojvdv.marketplace.service.Product;
 
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Product.ProductEntity;
+import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.dto.Discount.DiscountDto;
@@ -9,14 +10,18 @@ import com.pedrojvdv.marketplace.dto.Product.ProductDto;
 import com.pedrojvdv.marketplace.dto.Product.ProductResponseDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
+import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,15 +32,23 @@ public class ProductService {
 
     private final IProductRepository productRepository;
     private final IDiscountRepository discountRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN','SELLER')")
     public void createProduct(ProductDto productDto) throws BadRequestException {
 
+       UserEntity user = authenticatedUserService.getCurrentAuthenticatedUser();
+
+       DiscountEntity discount = discountRepository.findById(productDto.getDiscountId())
+               .orElseThrow(() -> new BadRequestException("Desconto não encontrado!"));
+
         ProductEntity product = ProductEntity.builder()
-                .publicId(UUID.randomUUID())
+                .publicId(generateLessProductUUID())
                 .name(productDto.getName())
                 .price(productDto.getPrice())
+                .discount(discount)
+                .users(user)
                 .quantity(productDto.getQuantity())
                 .build();
 
@@ -45,7 +58,7 @@ public class ProductService {
     //TICKETS
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN','SELLER')")
-    public void addDiscountIntoProduct(UUID productPublicId, Long discountId) throws NotFoundException {
+    public void addDiscountIntoProduct(String productPublicId, Long discountId) throws NotFoundException {
 
         ProductEntity product = productRepository.findByPublicId(productPublicId)
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado!"));
@@ -59,7 +72,7 @@ public class ProductService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN','SELLER')")
-    public void updateProduct(ProductResponseDto productResponseDto, UUID id) throws BadRequestException {
+    public void updateProduct(ProductResponseDto productResponseDto, String id) throws BadRequestException {
         ProductEntity product = productRepository.findByPublicId(id)
                 .orElseThrow(() -> new BadRequestException("Produto não encontrado!"));
 
@@ -108,7 +121,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("permitAll()")
-    public Optional<ProductDto> getProductByPublicId(UUID id) {
+    public Optional<ProductDto> getProductByPublicId(String id) {
         Optional<ProductDto> product = productRepository.findByPublicId(id)
                 .map(this::toDto);
         if (product.isEmpty()) {
@@ -224,6 +237,18 @@ public class ProductService {
         dto.setPrice(p.getPrice());
         dto.setQuantity(p.getQuantity());
         return dto;
+    }
+
+    //PUBLIC PRODUCT ID GENERATE -- this method transforms a UUID into String Type!
+    protected String generateLessProductUUID() {
+        UUID uuid = UUID.randomUUID();
+        ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
+        byteBuffer.putLong(uuid.getMostSignificantBits());
+        byteBuffer.putLong(uuid.getLeastSignificantBits());
+        return Base64
+                .getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(byteBuffer.array()).trim();
     }
 
 }

@@ -9,6 +9,7 @@ import com.pedrojvdv.marketplace.database.repository.Order.IOrderRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
+import com.pedrojvdv.marketplace.dto.Order.OrderUpdateDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
@@ -57,10 +58,9 @@ public class OrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("isAuthenticated()")
-    public void updateOrder(OrderDto orderDto) throws NotFoundException {
-        OrderEntity order = orderRepository.findByQuantity(orderDto.getQuantity())
-                .orElseThrow(() -> new NotFoundException("Quantidade não definida para esta ordem!"));
-
+    public void updateOrder(OrderUpdateDto orderDto) throws NotFoundException {
+        OrderEntity order = orderRepository.findById(orderDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException("Nenhuma ordem encontrada no sistema!"));
         if (orderDto.getQuantity() != null) {
             order.setQuantity(orderDto.getQuantity());
         }

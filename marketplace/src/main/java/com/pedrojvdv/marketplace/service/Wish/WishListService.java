@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,27 +78,28 @@ public class WishListService {
         return wish;
     }
 
-    @PreAuthorize("isAuthenticated()")
-    public void getWishListByUserId(Long userId) throws NotFoundException {
-        List<WishListAdminResponseDto> wish = wishListRepository.findByUsers_Id(userId)
+    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
+    public List<WishListAdminResponseDto> getWishListByUserId(Long userId) throws NotFoundException {
+        List<WishListAdminResponseDto> wishList = wishListRepository.findByUsers_Id(userId)
                 .stream()
                 .map(this::toAdminDto)
                 .toList();
-
-        if (wish.isEmpty()) {
+        if (wishList.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejos encontrada para este usuário!");
         }
+        return wishList;
     }
 
-    @PreAuthorize("isAuthenticated()")
-    public void getWishListByUserEmail(String email) throws NotFoundException {
-        List<WishListAdminResponseDto> wish = wishListRepository.findByUsers_Email(email)
+    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
+    public Optional<WishListAdminResponseDto> getWishListByUserEmail(String email) throws NotFoundException {
+        Optional<WishListAdminResponseDto> wishList = wishListRepository.findByUsers_Email(email)
                 .stream()
                 .map(this::toAdminDto)
-                .toList();
-        if (wish.isEmpty()) {
+                .findFirst();
+        if (wishList.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejo encontrada para este email de usuário!");
         }
+        return wishList;
     }
 
     @PreAuthorize("isAuthenticated() && hasAnyRole('USER', 'SELLER', 'ADMIN')")
