@@ -11,7 +11,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "product")
@@ -26,8 +25,8 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false,  updatable = false)
-    private UUID publicId;
+    @Column(unique = true, length = 22, nullable = false, updatable = false)
+    private String publicId;
 
     @Column(nullable = false)
     private String name;
@@ -42,7 +41,7 @@ public class ProductEntity {
     @JoinColumn(name = "discount_id", nullable = true) // pode estar redundante, sem problemas!
     private DiscountEntity discount;
 
-    @OneToMany(mappedBy = "product",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private Set<SaleEntity> sale = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
