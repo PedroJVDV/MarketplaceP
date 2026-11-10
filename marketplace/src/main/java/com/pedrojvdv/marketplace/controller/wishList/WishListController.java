@@ -2,6 +2,7 @@ package com.pedrojvdv.marketplace.controller.wishList;
 
 
 import com.pedrojvdv.marketplace.dto.Wish.WishListAdminResponseDto;
+import com.pedrojvdv.marketplace.dto.Wish.WishListCrudResponseDto;
 import com.pedrojvdv.marketplace.dto.Wish.WishListResponseDto;
 import com.pedrojvdv.marketplace.service.Wish.WishListService;
 import jakarta.validation.Valid;
@@ -24,36 +25,36 @@ public class WishListController {
     //POST,DELETE
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createWishList(@Valid @RequestBody WishListResponseDto wishListResponseDto) {
-        wishListService.createWishList(wishListResponseDto);
+    public void createWishList(@Valid @RequestBody WishListCrudResponseDto wishListCrudResponseDto) {
+        wishListService.createWishList(wishListCrudResponseDto);
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateWishList(@Valid @RequestBody WishListResponseDto wishListResponseDto) {
-        wishListService.updateWishList(wishListResponseDto);
+    @PatchMapping("/{wishListId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateWishList(@Valid @RequestBody WishListCrudResponseDto wishListCrudResponseDto, @PathVariable Long wishListId) {
+        wishListService.updateWishList(wishListCrudResponseDto, wishListId);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{wishListId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWishList() {
-        wishListService.deleteWishList();
+    public void deleteWishList(@PathVariable Long wishListId) {
+        wishListService.deleteWishList(wishListId);
     }
 
     //GET
     @GetMapping("/filter/email")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<WishListAdminResponseDto> findByEmail(@RequestParam String email) {
+    public List<WishListAdminResponseDto> findByEmail(@RequestParam String email) {
         return wishListService.getWishListByUserEmail(email);
     }
 
-    @GetMapping("/myWishList")
+    @GetMapping("/userwishlist")
     @ResponseStatus(HttpStatus.OK)
     public List<WishListResponseDto> getUserWishList() {
         return wishListService.getUserWishList();
     }
 
-    @GetMapping("/filter/{userId}/admin")
+    @GetMapping("/filter/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public List<WishListAdminResponseDto> findByUserId(@Valid @PathVariable Long userId) {
         return wishListService.getWishListByUserId(userId);

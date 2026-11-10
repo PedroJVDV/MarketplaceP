@@ -31,7 +31,7 @@ public class ProductController {
         productService.createProduct(productDto);
     }
 
-    @PutMapping("/{productId}")
+    @PatchMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
     public void updateProduct(@Valid @RequestBody ProductResponseDto productDto, @PathVariable("productId") String productId) throws NotFoundException {
         productService.updateProduct(productDto, productId);

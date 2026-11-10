@@ -33,7 +33,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping()
+    @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public void updateOrder(@Valid @RequestBody OrderUpdateDto orderDto) throws NotFoundException {
         orderService.updateOrder(orderDto);
