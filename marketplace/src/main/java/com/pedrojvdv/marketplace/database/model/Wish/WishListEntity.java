@@ -29,9 +29,4 @@ public class WishListEntity {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
-
-    @ManyToOne
-    @JoinColumn(name = "product_name", nullable = false)
-    private ProductEntity productName;
-
 }

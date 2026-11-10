@@ -1,10 +1,10 @@
 package com.pedrojvdv.marketplace.database.model.Product;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pedrojvdv.marketplace.database.model.Discount.DiscountEntity;
 import com.pedrojvdv.marketplace.database.model.Sale.SaleEntity;
 import com.pedrojvdv.marketplace.database.model.User.UserEntity;
+import com.pedrojvdv.marketplace.database.model.Wish.WishListEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,11 +38,14 @@ public class ProductEntity {
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_id", nullable = true) // pode estar redundante, sem problemas!
+    @JoinColumn(name = "discount_id") // pode estar redundante, sem problemas!
     private DiscountEntity discount;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private Set<SaleEntity> sale = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private Set<WishListEntity> wishList = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
