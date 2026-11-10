@@ -6,6 +6,7 @@ import com.pedrojvdv.marketplace.database.model.Wish.WishListEntity;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
 import com.pedrojvdv.marketplace.database.repository.Wish.IWishListRepository;
 import com.pedrojvdv.marketplace.dto.Wish.WishListAdminResponseDto;
+import com.pedrojvdv.marketplace.dto.Wish.WishListCrudResponseDto;
 import com.pedrojvdv.marketplace.dto.Wish.WishListResponseDto;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,17 +25,19 @@ public class WishListService {
     private final IProductRepository productRepository;
     private final AuthenticatedUserService authenticatedUserService;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasAnyRole('ADMIN', 'USER', 'SELLER')")
     @Transactional(rollbackFor = Exception.class)
-    public void createWishList(WishListResponseDto wishListResponseDto) {
+    public void createWishList(WishListCrudResponseDto wishListCrudResponseDto) {
 
         UserEntity user = authenticatedUserService.getCurrentAuthenticatedUser();
-        ProductEntity product = productRepository.findByPublicIdAndQuantityGreaterThan(wishListResponseDto.getProductCode(), 0)
+
+        ProductEntity productCode = productRepository.findByPublicId(wishListCrudResponseDto.getProductCode())
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado ou indisponível!"));
 
         WishListEntity wishList = WishListEntity.builder()
                 .users(user)
-                .product(product)
+                .wishListGroupName(wishListCrudResponseDto.getWishListGroupName())
+                .product(productCode)
                 .build();
 
         wishListRepository.save(wishList);
@@ -43,12 +45,11 @@ public class WishListService {
 
     @PreAuthorize("isAuthenticated()")
     @Transactional(rollbackFor = Exception.class)
-    public void updateWishList(WishListResponseDto wishListResponseDto) throws NotFoundException {
+    public void updateWishList(WishListCrudResponseDto wishListCrudResponseDto, Long wishListId) throws NotFoundException {
 
-        wishListRepository.findByWishListGroupName(wishListResponseDto.getWishListGroupName())
+        wishListRepository.findById(wishListId)
                 .ifPresentOrElse(wishList -> {
-                    wishList.setWishListGroupName(wishListResponseDto.getWishListGroupName());
-
+                    wishList.setWishListGroupName(wishListCrudResponseDto.getWishListGroupName());
                     wishListRepository.save(wishList);
                 }, () -> {
                     throw new NotFoundException("Lista de desejos não encontrada!");
@@ -57,8 +58,8 @@ public class WishListService {
 
     @PreAuthorize("isAuthenticated()")
     @Transactional(rollbackFor = Exception.class)
-    public void deleteWishList() throws NotFoundException {
-        wishListRepository.findByUsers_Id(authenticatedUserService.getCurrentAuthenticatedUser().getId())
+    public void deleteWishList(Long id) throws NotFoundException {
+        wishListRepository.findById(id)
                 .ifPresentOrElse(wishListRepository::delete,
                         () -> {
                             throw new NotFoundException("Nenhuma lista de desejos vinculada a este usuário!");
@@ -91,11 +92,11 @@ public class WishListService {
     }
 
     @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
-    public Optional<WishListAdminResponseDto> getWishListByUserEmail(String email) throws NotFoundException {
-        Optional<WishListAdminResponseDto> wishList = wishListRepository.findByUsers_Email(email)
+    public List<WishListAdminResponseDto> getWishListByUserEmail(String email) throws NotFoundException {
+        List<WishListAdminResponseDto> wishList = wishListRepository.findByUsers_Email(email)
                 .stream()
                 .map(this::toAdminDto)
-                .findFirst();
+                .toList();
         if (wishList.isEmpty()) {
             throw new NotFoundException("Nenhuma lista de desejo encontrada para este email de usuário!");
         }

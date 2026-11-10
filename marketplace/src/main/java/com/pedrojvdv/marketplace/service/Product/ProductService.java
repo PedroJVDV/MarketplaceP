@@ -239,12 +239,15 @@ public class ProductService {
         return dto;
     }
 
-    //PUBLIC PRODUCT ID GENERATE -- this method transforms a UUID into String Type!
+    //GENERATE PUBLIC PRODUCT ID -- this method transforms a UUID into String type!
     protected String generateLessProductUUID() {
         UUID uuid = UUID.randomUUID();
+
         ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
+
         byteBuffer.putLong(uuid.getMostSignificantBits());
         byteBuffer.putLong(uuid.getLeastSignificantBits());
+
         return Base64
                 .getUrlEncoder()
                 .withoutPadding()
