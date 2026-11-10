@@ -52,6 +52,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/filter/saleID/{saleId}").hasAnyRole("SELLER", "ADMIN")
 
+                        .requestMatchers("/v1/wishlist/**").authenticated()
                         .requestMatchers("/v1/user/**").authenticated()
                         .requestMatchers("/v1/order/**").authenticated()
                         .anyRequest().authenticated()
