@@ -4,7 +4,6 @@ import com.pedrojvdv.marketplace.database.model.Order.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +12,13 @@ public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
 
     Optional<OrderEntity> findByQuantity(Integer quantity);
 
-    List<OrderEntity> findByOrderTime(LocalDateTime orderTime);
+
+    @Query(value = """
+                        SELECT o from OrderEntity o
+                        WHERE EXTRACT( hour FROM o.orderTime) = :hour
+                        AND EXTRACT(minute FROM o.orderTime) = :minute
+            """)
+    List<OrderEntity> findOrderByHourAndMinute(int hour, int minute);
 
     @Query(value = """
                     SELECT o

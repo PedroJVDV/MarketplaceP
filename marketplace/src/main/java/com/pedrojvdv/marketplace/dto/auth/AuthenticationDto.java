@@ -14,4 +14,5 @@ public class AuthenticationDto {
     private String email;
     private String usernameLogin;
     private String password;
+    private Integer age;
 }

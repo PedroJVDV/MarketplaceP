@@ -85,10 +85,11 @@ public class UserEntity implements UserDetails {
        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
-    public UserEntity(String name, String email, String userNameLogin, String password, UserRole role) {
+    public UserEntity(String name, String email, String userNameLogin,Integer age, String password, UserRole role) {
         this.name = name;
         this.email = email;
         this.usernameLogin = userNameLogin;
+        this.age = age;
         this.password = password;
         this.role = role;
     }

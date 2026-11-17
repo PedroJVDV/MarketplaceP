@@ -14,10 +14,12 @@ import lombok.*;
 @NotBlank
 public class RegisterRequestDto {
 
-    String username;
+    private String username;
     @Email
-    String email;
-    String usernameLogin;
-    String password;
+    private String email;
+    private String usernameLogin;
+    private String password;
+    private Integer age;
+
     // DEFAULT ROLE == USER!
 }

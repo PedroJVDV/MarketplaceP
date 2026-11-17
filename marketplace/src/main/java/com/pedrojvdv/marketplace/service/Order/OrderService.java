@@ -7,7 +7,6 @@ import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.Discount.IDiscountRepository;
 import com.pedrojvdv.marketplace.database.repository.Order.IOrderRepository;
 import com.pedrojvdv.marketplace.database.repository.Product.IProductRepository;
-import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.Order.OrderDto;
 import com.pedrojvdv.marketplace.dto.Order.OrderUpdateDto;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
@@ -15,12 +14,11 @@ import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -86,8 +84,11 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
-    public List<OrderDto> getByOrderTime(LocalDateTime orderTime) {
-        return orderRepository.findByOrderTime(orderTime)
+    public List<OrderDto> getByOrderTime(LocalTime orderTime) {
+        int hour = orderTime.getHour();
+        int minute = orderTime.getMinute();
+
+        return orderRepository.findOrderByHourAndMinute(hour, minute)
                 .stream()
                 .map(this::toDto)
                 .toList();

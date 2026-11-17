@@ -7,6 +7,7 @@ import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.Order.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -28,7 +30,7 @@ public class OrderController {
     //POST-DELETE
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void>createOrder(@Valid @RequestBody OrderDto orderDto, @AuthenticationPrincipal UserDetails authUserId)throws NotFoundException {
+    public ResponseEntity<Void> createOrder(@Valid @RequestBody OrderDto orderDto, @AuthenticationPrincipal UserDetails authUserId) throws NotFoundException {
         orderService.createOrder(orderDto, authUserId.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -54,7 +56,9 @@ public class OrderController {
 
     @GetMapping("/filter/ordertime")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> getByOrderTime(@RequestParam LocalDateTime orderTime) {
+    public List<OrderDto> getByOrderTime(@RequestParam
+                                         @DateTimeFormat(pattern = "HH:mm")
+                                         LocalTime orderTime) {
         return orderService.getByOrderTime(orderTime);
     }
 

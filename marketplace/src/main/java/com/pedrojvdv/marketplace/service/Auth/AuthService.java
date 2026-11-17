@@ -52,6 +52,7 @@ public class AuthService {
                 registerDto.getUsername(),
                 registerDto.getEmail(),
                 registerDto.getUsernameLogin(),
+                registerDto.getAge(),
                 encodedPassword,
                 UserRole.USER
         );

@@ -1,7 +1,9 @@
 package com.pedrojvdv.marketplace.controller.user;
 
 import com.pedrojvdv.marketplace.dto.User.UserAdminResponseDto;
+import com.pedrojvdv.marketplace.dto.User.UserPasswordChangerDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
+import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
 import com.pedrojvdv.marketplace.service.User.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +22,28 @@ public class UserController {
 
     private final UserService userService;
 
-    //NOW, THIS CLASS IS MANAGED ONLY BY ADMINS!
+    //TODO: continues updateUserPassword method implementation!
+    @PutMapping("/update-password")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateUserPassword(@RequestBody UserPasswordChangerDto userPasswordChangerDto) throws NotFoundException, BadRequestException {
+        userService.updateUserPassword(userPasswordChangerDto);
+    }
 
     @GetMapping("/filter/email")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<UserAdminResponseDto> findByEmail(@RequestParam String email)throws NotFoundException {
+    public Optional<UserAdminResponseDto> findByEmail(@RequestParam String email) throws NotFoundException {
         return userService.getUserByEmail(email);
     }
 
     @GetMapping("/filter/role")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserAdminResponseDto> findByRole(@RequestParam UserRole role)throws NotFoundException {
+    public List<UserAdminResponseDto> findByRole(@RequestParam UserRole role) throws NotFoundException {
         return userService.getUserByRole(role);
     }
 
     @GetMapping("/filter/name")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<UserAdminResponseDto> findByName(@RequestParam String name)throws NotFoundException {
+    public Optional<UserAdminResponseDto> findByName(@RequestParam String name) throws NotFoundException {
         return userService.getUserByUsernameLogin(name);
     }
 

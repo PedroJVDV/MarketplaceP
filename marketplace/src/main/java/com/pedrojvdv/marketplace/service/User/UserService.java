@@ -4,12 +4,15 @@ import com.pedrojvdv.marketplace.database.model.User.UserEntity;
 import com.pedrojvdv.marketplace.database.repository.User.IUserRepository;
 import com.pedrojvdv.marketplace.dto.User.UserAdminInputDto;
 import com.pedrojvdv.marketplace.dto.User.UserAdminResponseDto;
+import com.pedrojvdv.marketplace.dto.User.UserPasswordChangerDto;
 import com.pedrojvdv.marketplace.dto.User.UserResponseDto;
 import com.pedrojvdv.marketplace.enums.User.UserRole;
 import com.pedrojvdv.marketplace.exception.BadRequestException;
 import com.pedrojvdv.marketplace.exception.NotFoundException;
+import com.pedrojvdv.marketplace.service.Auth.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,8 @@ import java.util.Optional;
 public class UserService {
 
     private final IUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
@@ -58,7 +63,7 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUser( UserAdminInputDto userDto) throws NotFoundException {
+    public void deleteUser(UserAdminInputDto userDto) throws NotFoundException {
         userRepository.findByEmail(userDto.getEmail())
                 .ifPresentOrElse(user -> {
                     if (user.getEmail().equals(userDto.getEmail())) {
@@ -69,6 +74,31 @@ public class UserService {
                 }, () -> {
                     throw new NotFoundException("Usuario com esse email não existe ou email incorreto!");
                 });
+    }
+
+
+    //TODO: passwordMatches with BCryptPasswordEncoder!
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("isAuthenticated()")
+    public void updateUserPassword(UserPasswordChangerDto userPasswordChangerDto) throws NotFoundException, BadRequestException {
+
+        UserEntity authenticatedUser = authenticatedUserService.getCurrentAuthenticatedUser();
+
+        userRepository.findByEmail(authenticatedUserService.getCurrentAuthenticatedUser().getEmail()).ifPresentOrElse(user -> {
+
+            if (passwordEncoder.matches(userPasswordChangerDto.getPassword(), authenticatedUser.getPassword()) && (userPasswordChangerDto.getNewPassword()
+                    .equals(userPasswordChangerDto.getConfirmNewPassword()))) {
+
+                String newPasswordEncoded = passwordEncoder.encode(userPasswordChangerDto.getPassword());
+
+                user.setPassword(newPasswordEncoded);
+                userRepository.save(user);
+            } else {
+                throw new NotFoundException("Senha incorreta!");
+            }
+        }, () -> {
+            throw new NotFoundException("Usuário com esse email não existe!");
+        });
     }
 
     @Transactional(rollbackFor = Exception.class)
